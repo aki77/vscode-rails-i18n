@@ -1,4 +1,4 @@
-# rails-i18n
+# Rails I18n
 
 Completion and Hover provider for Rails I18n.
 
