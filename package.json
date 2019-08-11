@@ -1,0 +1,106 @@
+{
+  "name": "rails-i18n",
+  "displayName": "rails-i18n",
+  "description": "Completion and Hover provider for Rails I18n.",
+  "version": "0.1.0",
+  "publisher": "aki77",
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.37.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aki77/vscode-rails-i18n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aki77/vscode-rails-i18n/issues"
+  },
+  "activationEvents": [
+    "onLanguage:ruby",
+    "onLanguage:haml",
+    "onLanguage:erb",
+    "onLanguage:slim"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Rails I18n Configuration",
+      "properties": {
+        "railsI18n.translateMethods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "I18n.translate",
+            "I18n.t",
+            "t"
+          ],
+          "description": "I18n translate methods"
+        },
+        "railsI18n.localizeMethods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "I18n.localize",
+            "I18n.l",
+            "l"
+          ],
+          "description": "I18n localize methods"
+        },
+        "railsI18n.localeFilePattern": {
+          "type": "string",
+          "default": "config/locales/*.yml",
+          "description": "I18n locale file glob pattern"
+        },
+        "railsI18n.priorityOfLocales": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "en"
+          ],
+          "description": "Priority locales list"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/flat": "0.0.28",
+    "@types/glob": "^7.1.1",
+    "@types/js-yaml": "^3.12.1",
+    "@types/lodash.frompairs": "^4.0.6",
+    "@types/lodash.merge": "^4.6.6",
+    "@types/lodash.sortby": "^4.7.6",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.36.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1",
+    "vscode-test": "^1.0.2"
+  },
+  "dependencies": {
+    "escape-string-regexp": "^2.0.0",
+    "flat": "^4.1.0",
+    "js-yaml": "^3.13.1",
+    "lodash.frompairs": "^4.0.1",
+    "lodash.merge": "^4.6.2",
+    "lodash.sortby": "^4.7.0"
+  }
+}
