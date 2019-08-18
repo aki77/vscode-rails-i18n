@@ -11,6 +11,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Lazy lookup support
 - Quick fix `Convert absolute key`
 
+### Changed
+
+- Improve `I18nTranslateCompletionProvider`
+
 ## 0.1.1
 
 - Update displayName

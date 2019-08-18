@@ -46,6 +46,7 @@ export default class I18nTranslatePrefixCompletionProvider
     return [paths.join("."), paths.slice(1).join(".")].map((key, index) => {
       const item = new CompletionItem(key, CompletionItemKind.Keyword);
       item.preselect = index === 0;
+      item.sortText = index === 0 ? "0" : "1";
       return item;
     });
   }

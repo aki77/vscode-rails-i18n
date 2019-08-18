@@ -22,7 +22,9 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
       SELECTOR,
-      new I18nTranslateCompletionProvider(i18n)
+      new I18nTranslateCompletionProvider(i18n),
+      "'",
+      '"'
     )
   );
 

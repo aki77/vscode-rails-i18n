@@ -30,11 +30,10 @@ export default class I18nTranslateCompletionProvider
       return null;
     }
 
-    const range = document.getWordRangeAtPosition(position, /[a-zA-Z0-9_.]+/);
-    if (!range) {
-      return null;
-    }
-
+    const range =
+      document.getWordRangeAtPosition(position, /[a-zA-Z0-9_.]+/) ||
+      // NOTE: when trigger characters
+      new Range(position, position);
     return this.buildCompletinItems(range);
   }
 
