@@ -9,6 +9,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Added
 
 - Lazy lookup support
+- Quick fix `Convert absolute key`
 
 ## 0.1.1
 

@@ -1,5 +1,12 @@
 import * as vscode from "vscode";
-import { FileSystemWatcher, WorkspaceFolder, RelativePattern } from "vscode";
+import {
+  FileSystemWatcher,
+  WorkspaceFolder,
+  RelativePattern,
+  TextDocument,
+  Range,
+  Position
+} from "vscode";
 import { readFile } from "fs";
 import { promisify } from "util";
 import * as yaml from "js-yaml";
@@ -8,8 +15,11 @@ import { flatten } from "flat";
 const fromPairs = require("lodash.frompairs");
 const sortBy = require("lodash.sortby");
 const merge = require("lodash.merge");
+const escapeStringRegexp = require("escape-string-regexp");
 
 const readFileAsync = promisify(readFile);
+
+const KEY_REGEXP = /[a-zA-Z0-9_.]+/;
 
 export default class I18n {
   private translations: Map<string, string> = new Map();
@@ -53,6 +63,37 @@ export default class I18n {
 
   public localizeMethods(): string[] {
     return vscode.workspace.getConfiguration("railsI18n").localizeMethods;
+  }
+
+  public getKeyByRange(document: TextDocument, range: Range) {
+    const keyAndRange = this.getKeyAndRange(document, range.start);
+    return keyAndRange ? keyAndRange.key : null;
+  }
+
+  public getKeyAndRange(document: TextDocument, position: Position) {
+    if (!this.isKeyByPosition(document, position)) {
+      return;
+    }
+
+    const range = document.getWordRangeAtPosition(position, KEY_REGEXP);
+    if (!range) {
+      return;
+    }
+
+    const key = document.getText(range);
+    return { range, key };
+  }
+
+  private get i18nRegexp() {
+    const methods = this.translateMethods().map(escapeStringRegexp);
+    const i18nRegexp = new RegExp(
+      `[^a-z.](?:${methods.join("|")})['"\\s(]+([a-zA-Z0-9_.]*)`
+    );
+    return i18nRegexp;
+  }
+
+  private isKeyByPosition(document: TextDocument, position: Position) {
+    return !!document.getWordRangeAtPosition(position, this.i18nRegexp);
   }
 
   private createFileWatchers() {
