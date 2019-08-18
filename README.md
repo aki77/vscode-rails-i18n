@@ -1,18 +1,26 @@
 # Rails I18n
 
-Completion and Hover provider for Rails I18n.
+Completion, Hover and QuickFix provider for Rails I18n.
 
 ## Features
 
-Completion
+### Completion
+
+#### translate
 
 ![translate](https://i.gyazo.com/f05479cbeeae524235096223e7636164.gif)
 
+#### localize
+
 ![localize](https://i.gyazo.com/2430eb641cf8f2628dfa3fe86586f934.gif)
 
-Hover
+### Hover
 
 ![hover](https://i.gyazo.com/fc5f345b620222261072389a8cea2013.gif)
+
+### Quick fix
+
+![quickfix](https://i.gyazo.com/5c97d57a3a692f9b253ddc40655e5703.gif)
 
 ## Extension Settings
 
@@ -28,3 +36,6 @@ This extension contributes the following settings:
 - [ ] Completion of activerecord error message
 - [ ] Expand translation variables into snippets
 - [ ] Localize method hover widget
+- [ ] Translations missing report
+- [ ] Extract translations from code
+- [ ] Test
