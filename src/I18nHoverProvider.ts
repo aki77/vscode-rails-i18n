@@ -1,5 +1,6 @@
 import { TextDocument, Position, HoverProvider, Hover } from "vscode";
 import I18n from "./i18n";
+import KeyDetector from "./KeyDetector";
 
 const escapeStringRegexp = require("escape-string-regexp");
 
@@ -9,13 +10,18 @@ export default class I18nHoverProvider implements HoverProvider {
   public provideHover(document: TextDocument, position: Position) {
     const keyRange = this.getI18nKeyAndRange(document, position);
     if (!keyRange) {
-      return null;
+      return;
     }
 
     const { key, range } = keyRange;
-    const value = this.i18n.get(key);
+    const normalizedKey = KeyDetector.asAbsoluteKey(key, document);
+    if (!normalizedKey) {
+      return;
+    }
+
+    const value = this.i18n.get(normalizedKey);
     if (!value) {
-      return null;
+      return;
     }
 
     return new Hover({ language: "text", value }, range);
