@@ -1,4 +1,4 @@
-import { TextDocument, workspace } from "vscode";
+import { TextDocument, workspace, Position, Range } from "vscode";
 import * as path from "path";
 
 export default class KeyDetector {
@@ -21,5 +21,14 @@ export default class KeyDetector {
     const basename = path.basename(relativePath).split(".", 2)[0];
 
     return [...parts, basename].join(".") + key;
+  }
+
+  public static asAbsoluteKeys(locale: string, key: string, position: Position, range: Range) {
+    const relativeCursorPos = position.character - range.start.character;
+    const keySegmentLimit = key.slice(0, relativeCursorPos).split('.').length;
+
+    const fullKeys = key.split('.').slice(0, keySegmentLimit);
+
+    return [locale].concat(fullKeys);
   }
 }
