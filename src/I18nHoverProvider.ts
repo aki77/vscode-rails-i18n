@@ -17,11 +17,11 @@ export default class I18nHoverProvider implements HoverProvider {
       return;
     }
 
-    const value = this.i18n.get(normalizedKey);
-    if (!value) {
+    const translation = this.i18n.get(normalizedKey);
+    if (!translation) {
       return;
     }
 
-    return new Hover({ language: "text", value }, range);
+    return new Hover({ language: "text", value: translation.value }, range);
   }
 }

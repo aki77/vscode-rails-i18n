@@ -89,6 +89,7 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
     "@types/vscode": "^1.36.0",
+    "@types/yaml": "^1.9.7",
     "glob": "^7.1.4",
     "mocha": "^6.1.4",
     "tslint": "^5.12.1",
@@ -101,6 +102,7 @@
     "js-yaml": "^3.13.1",
     "lodash.frompairs": "^4.0.1",
     "lodash.merge": "^4.6.2",
-    "lodash.sortby": "^4.7.0"
+    "lodash.sortby": "^4.7.0",
+    "yaml": "^1.10.0"
   }
 }

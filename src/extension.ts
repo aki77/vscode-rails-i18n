@@ -5,6 +5,7 @@ import I18nTranslatePrefixCompletionProvider from "./I18nTranslatePrefixCompleti
 import I18nLocalizeCompletionProvider from "./I18nLocalizeCompletionProvider";
 import I18nHoverProvider from "./I18nHoverProvider";
 import I18nCodeActionProvider from "./I18nCodeActionProvider";
+import I18nDefinitionProvider from './I18nDefinitionProvider';
 
 const SELECTOR = ["ruby", "erb", "haml", "slim"];
 const TRIGGER_CHARS = `.abcdefghijklmnopqrstuvwxyz'"`.split("");
@@ -55,6 +56,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCodeActionsProvider(
       SELECTOR,
       new I18nCodeActionProvider(i18n)
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider(
+      SELECTOR,
+      new I18nDefinitionProvider(i18n)
     )
   );
 }

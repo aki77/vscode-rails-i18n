@@ -21,8 +21,14 @@ const readFileAsync = promisify(readFile);
 
 const KEY_REGEXP = /[a-zA-Z0-9_.]+/;
 
+interface Translation {
+  locale: string,
+  path: string,
+  value: string
+}
+
 export default class I18n {
-  private translations: Map<string, string> = new Map();
+  private translations: Map<string, Translation> = new Map();
   private fileWatchers: FileSystemWatcher[];
 
   constructor(private globPettern: string) {
@@ -114,17 +120,31 @@ export default class I18n {
     return fileWatchers;
   }
 
+  private async readFileAsyncWrapper(path: string) {
+    return [path, await readFileAsync(path)]
+  }
+
+  private jsonToTranslation(locale: string, path: string, values: any) {
+    values = values ? flatten(values) : {};
+
+    Object.keys(values).map(key => {
+      values[key] = { locale, path, value: values[key] };
+    });
+
+    return values;
+  }
+
   private async parse() {
     const localePaths = await vscode.workspace.findFiles(this.globPettern);
     const buffers = await Promise.all(
-      localePaths.map(({ path }) => readFileAsync(path))
+      localePaths.map(({ path }) => this.readFileAsyncWrapper(path))
     );
-    const jsonArray = buffers.map(buffer =>
-      yaml.safeLoad(buffer.toString(), { json: true })
+    const jsonArray = buffers.map(([path, buffer]) =>
+      [path, yaml.safeLoad(buffer.toString(), { json: true })]
     );
-    const translationsArray = jsonArray.map(json => {
+    const translationsArray = jsonArray.map(([path, json]) => {
       const locales = Object.keys(json).map(locale => {
-        const values = json[locale] ? flatten(json[locale]) : {};
+        const values = this.jsonToTranslation(locale, path, json[locale]);
         return [locale, values];
       });
       return fromPairs(locales);
