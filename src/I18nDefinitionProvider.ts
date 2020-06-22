@@ -54,7 +54,7 @@ export default class I18nDefinitionProvider implements DefinitionProvider {
 
   private getScalar(contents: any, absoluteKeys: string[]) {
     const lastKey = absoluteKeys.pop();
-    const rootScalar = contents.getIn(absoluteKeys)
+    const rootScalar = contents.getIn(absoluteKeys);
 
     return rootScalar.items.find((pair: Pair) => pair.key.value === lastKey);
   }

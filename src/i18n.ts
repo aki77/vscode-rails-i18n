@@ -121,7 +121,7 @@ export default class I18n {
   }
 
   private async readFileAsyncWrapper(path: string) {
-    return [path, await readFileAsync(path)]
+    return [path, await readFileAsync(path)];
   }
 
   private jsonToTranslation(locale: string, path: string, values: any) {
