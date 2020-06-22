@@ -4,6 +4,16 @@ All notable changes to the "rails-i18n" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.3.0
+
+### Added
+
+- Goto definition (#4)
+
+### Changed
+
+- Trigger on any characters (#3)
+
 ## 0.2.0
 
 ### Added
