@@ -22,6 +22,10 @@ Completion, Hover and QuickFix provider for Rails I18n.
 
 ![quickfix](https://i.gyazo.com/5c97d57a3a692f9b253ddc40655e5703.gif)
 
+### Goto definition
+
+![Goto](https://i.gyazo.com/1e57c68dca96dae3a2f7831a0801ba0a.gif)
+
 ## Extension Settings
 
 This extension contributes the following settings:
