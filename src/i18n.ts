@@ -22,8 +22,8 @@ const readFileAsync = promisify(readFile);
 const KEY_REGEXP = /[a-zA-Z0-9_.]+/;
 
 interface Translation {
-  locale: string,
-  path: string,
+  locale: string
+  path: string
   value: string
 }
 
