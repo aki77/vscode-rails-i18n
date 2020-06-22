@@ -13,6 +13,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Changed
 
 - Trigger on any characters (#3)
+- Update dependencies
 
 ## 0.2.0
 
