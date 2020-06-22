@@ -9,7 +9,7 @@ import {
 } from "vscode";
 import I18n from './i18n';
 import KeyDetector from './KeyDetector';
-import YAML = require('yaml');
+import { parseDocument } from 'yaml';
 import { Pair } from 'yaml/types';
 
 export default class I18nDefinitionProvider implements DefinitionProvider {
@@ -41,7 +41,7 @@ export default class I18nDefinitionProvider implements DefinitionProvider {
     const targetUri = Uri.file(path);
     const localeText = await workspace.openTextDocument(targetUri);
 
-    const contents = YAML.parseDocument(localeText.getText()).contents as any;
+    const contents = parseDocument(localeText.getText()).contents as any;
     if (!contents) {
       return;
     }
