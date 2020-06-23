@@ -5,7 +5,7 @@ import {
   Position,
   Uri,
   workspace,
-  Location
+  LocationLink
 } from "vscode";
 import I18n from './i18n';
 import KeyDetector from './KeyDetector';
@@ -34,10 +34,10 @@ export default class I18nDefinitionProvider implements DefinitionProvider {
 
     const absoluteKeys = KeyDetector.asAbsoluteKeys(translation.locale, normalizedKey, position, range);
 
-    return this.getDefinitionLocation(translation.path, absoluteKeys);
+    return this.getDefinitionLocation(translation.path, absoluteKeys, range);
   }
 
-  private async getDefinitionLocation(path: string, absoluteKeys: string[]) {
+  private async getDefinitionLocation(path: string, absoluteKeys: string[], originSelectionRange: Range): Promise<LocationLink[] | undefined> {
     const targetUri = Uri.file(path);
     const localeText = await workspace.openTextDocument(targetUri);
 
@@ -49,7 +49,13 @@ export default class I18nDefinitionProvider implements DefinitionProvider {
     const scalar = this.getScalar(contents, absoluteKeys);
     const pos = localeText.positionAt(scalar.key.range[0]);
 
-    return new Location(targetUri, new Range(pos, pos));
+    return [
+      {
+        originSelectionRange,
+        targetUri,
+        targetRange: new Range(pos, pos),
+      }
+    ];
   }
 
   private getScalar(contents: any, absoluteKeys: string[]) {
