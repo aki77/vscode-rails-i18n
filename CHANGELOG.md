@@ -14,6 +14,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Trigger on any characters (#3)
 - Update dependencies
+- Migrate to yaml package
 
 ## 0.2.0
 

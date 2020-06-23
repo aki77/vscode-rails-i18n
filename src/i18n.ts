@@ -9,7 +9,7 @@ import {
 } from "vscode";
 import { readFile } from "fs";
 import { promisify } from "util";
-import * as yaml from "js-yaml";
+import { parseDocument } from 'yaml';
 import { flatten } from "flat";
 
 const fromPairs = require("lodash.frompairs");
@@ -140,8 +140,9 @@ export default class I18n {
       localePaths.map(({ path }) => this.readFileAsyncWrapper(path))
     );
     const jsonArray = buffers.map(([path, buffer]) =>
-      [path, yaml.safeLoad(buffer.toString(), { json: true })]
+      [path, parseDocument(buffer.toString()).toJSON()]
     );
+
     const translationsArray = jsonArray.map(([path, json]) => {
       const locales = Object.keys(json).map(locale => {
         const values = this.jsonToTranslation(locale, path, json[locale]);
