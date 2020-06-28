@@ -1,4 +1,4 @@
-import { TextDocument, workspace } from "vscode";
+import { TextDocument, workspace, Position, Range } from "vscode";
 import * as path from "path";
 
 export default class KeyDetector {

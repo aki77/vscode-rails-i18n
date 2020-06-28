@@ -69,7 +69,7 @@ export default class I18nLocalizeCompletionProvider
         const [type, , format] = key.split(".");
         const item = new CompletionItem(format, CompletionItemKind.Keyword);
         item.detail = type;
-        item.documentation = translation;
+        item.documentation = translation.value;
         return item;
       });
   }

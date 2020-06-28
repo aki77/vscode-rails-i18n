@@ -40,7 +40,7 @@ export default class I18nTranslateCompletionProvider
   private buildCompletinItems(range: Range) {
     return Array.from(this.i18n.entries()).map(([key, translation]) => {
       const item = new CompletionItem(key, CompletionItemKind.Keyword);
-      item.documentation = translation;
+      item.documentation = translation.value;
       item.range = range;
       return item;
     });

@@ -5,24 +5,18 @@ import {
   RelativePattern,
   TextDocument,
   Range,
-  Position
+  Position,
 } from "vscode";
-import { readFile } from "fs";
-import { promisify } from "util";
-import * as yaml from "js-yaml";
-import { flatten } from "flat";
-
-const fromPairs = require("lodash.frompairs");
-const sortBy = require("lodash.sortby");
-const merge = require("lodash.merge");
-const escapeStringRegexp = require("escape-string-regexp");
-
-const readFileAsync = promisify(readFile);
+import sortBy from "lodash/sortBy";
+import arrayFlatten from "lodash/flatten";
+import escapeStringRegexp from "escape-string-regexp";
+import { priorityOfLocales } from "./utils";
+import { Parser, Translation } from './Parser';
 
 const KEY_REGEXP = /[a-zA-Z0-9_.]+/;
 
 export default class I18n {
-  private translations: Map<string, string> = new Map();
+  private translations: Map<string, Translation> = new Map();
   private fileWatchers: FileSystemWatcher[];
 
   constructor(private globPettern: string) {
@@ -114,39 +108,22 @@ export default class I18n {
     return fileWatchers;
   }
 
-  private async parse() {
+  private async parse(): Promise<Record<string, Translation>> {
     const localePaths = await vscode.workspace.findFiles(this.globPettern);
-    const buffers = await Promise.all(
-      localePaths.map(({ path }) => readFileAsync(path))
-    );
-    const jsonArray = buffers.map(buffer =>
-      yaml.safeLoad(buffer.toString(), { json: true })
-    );
-    const translationsArray = jsonArray.map(json => {
-      const locales = Object.keys(json).map(locale => {
-        const values = json[locale] ? flatten(json[locale]) : {};
-        return [locale, values];
-      });
-      return fromPairs(locales);
-    });
+    try {
+      const localeWithTranslationsEntries = await Promise.all(localePaths.map(({ path }) => {
+        return new Parser(path).parse();
+      }));
+      const sortedLocaleWithTranslationsEntries = sortBy(arrayFlatten(localeWithTranslationsEntries), [([locale]) => {
+        const index = priorityOfLocales().indexOf(locale);
+        return index < 0 ? 100 : index + 1;
+      }]);
 
-    const translations = merge({}, ...translationsArray);
-    return this.mergeTranslations(translations);
-  }
-
-  private mergeTranslations(translations: { [locale: string]: {} }) {
-    const priorityData = Object.keys(translations).map(locale => {
-      const priorityOfLocales = vscode.workspace.getConfiguration("railsI18n")
-        .priorityOfLocales as string[];
-      const index = priorityOfLocales.indexOf(locale);
-      return {
-        priority: index < 0 ? 100 : index + 1,
-        data: translations[locale]
-      };
-    });
-    const sortedTranslations = sortBy(priorityData, "priority")
-      .map(({ data }: { data: {} }) => data)
-      .reverse();
-    return Object.assign({}, ...sortedTranslations);
+      const translationsArray = sortedLocaleWithTranslationsEntries.reverse().map(([, translations]) => translations);
+      return Object.assign({}, ...translationsArray);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 }
