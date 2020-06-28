@@ -1,21 +1,17 @@
 import {
   DefinitionProvider,
-  Range,
   TextDocument,
   Position,
   Uri,
-  workspace,
   LocationLink
 } from "vscode";
 import I18n from './i18n';
 import KeyDetector from './KeyDetector';
-import { parseDocument } from 'yaml';
-import { Pair } from 'yaml/types';
 
 export default class I18nDefinitionProvider implements DefinitionProvider {
   constructor(private i18n: I18n) { }
 
-  public async provideDefinition(document: TextDocument, position: Position) {
+  public async provideDefinition(document: TextDocument, position: Position): Promise<LocationLink[] | undefined> {
     const keyAndRange = this.i18n.getKeyAndRange(document, position);
     if (!keyAndRange) {
       return;
@@ -32,36 +28,12 @@ export default class I18nDefinitionProvider implements DefinitionProvider {
       return;
     }
 
-    const absoluteKeys = KeyDetector.asAbsoluteKeys(translation.locale, normalizedKey, position, range);
-
-    return this.getDefinitionLocation(translation.path, absoluteKeys, range);
-  }
-
-  private async getDefinitionLocation(path: string, absoluteKeys: string[], originSelectionRange: Range): Promise<LocationLink[] | undefined> {
-    const targetUri = Uri.file(path);
-    const localeText = await workspace.openTextDocument(targetUri);
-
-    const contents = parseDocument(localeText.getText()).contents as any;
-    if (!contents) {
-      return;
-    }
-
-    const scalar = this.getScalar(contents, absoluteKeys);
-    const pos = localeText.positionAt(scalar.key.range[0]);
-
     return [
       {
-        originSelectionRange,
-        targetUri,
-        targetRange: new Range(pos, pos),
+        originSelectionRange: range,
+        targetUri: Uri.file(translation.path),
+        targetRange: translation.range,
       }
     ];
-  }
-
-  private getScalar(contents: any, absoluteKeys: string[]) {
-    const lastKey = absoluteKeys.pop();
-    const rootScalar = contents.getIn(absoluteKeys);
-
-    return rootScalar.items.find((pair: Pair) => pair.key.value === lastKey);
   }
 }

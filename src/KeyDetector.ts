@@ -22,13 +22,4 @@ export default class KeyDetector {
 
     return [...parts, basename].join(".") + key;
   }
-
-  public static asAbsoluteKeys(locale: string, key: string, position: Position, range: Range) {
-    const relativeCursorPos = position.character - range.start.character;
-    const keySegmentLimit = key.slice(0, relativeCursorPos).split('.').length;
-
-    const fullKeys = key.split('.').slice(0, keySegmentLimit);
-
-    return [locale].concat(fullKeys);
-  }
 }
