@@ -11,10 +11,10 @@ import { readFile } from "fs";
 import { promisify } from "util";
 import { parseDocument } from 'yaml';
 import { flatten } from "flat";
+import fromPairs from "lodash/fromPairs";
+import sortBy from "lodash/sortBy";
+import merge from "lodash/merge";
 
-const fromPairs = require("lodash.frompairs");
-const sortBy = require("lodash.sortby");
-const merge = require("lodash.merge");
 const escapeStringRegexp = require("escape-string-regexp");
 
 const readFileAsync = promisify(readFile);
