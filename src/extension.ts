@@ -8,7 +8,6 @@ import I18nCodeActionProvider from "./I18nCodeActionProvider";
 import I18nDefinitionProvider from './I18nDefinitionProvider';
 
 const SELECTOR = ["ruby", "erb", "haml", "slim"];
-const TRIGGER_CHARS = `.abcdefghijklmnopqrstuvwxyz'"`.split("");
 
 export async function activate(context: vscode.ExtensionContext) {
   const globPettern = vscode.workspace.getConfiguration("railsI18n")
@@ -25,7 +24,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       SELECTOR,
       new I18nTranslateCompletionProvider(i18n),
-      ...TRIGGER_CHARS
+      "'",
+      '"'
     )
   );
 
@@ -33,7 +33,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       SELECTOR,
       new I18nTranslatePrefixCompletionProvider(i18n),
-      ...TRIGGER_CHARS
+      "'",
+      '"'
     )
   );
 
