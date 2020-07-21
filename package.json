@@ -100,7 +100,7 @@
   "dependencies": {
     "escape-string-regexp": "^2.0.0",
     "flat": "^4.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "yaml": "^1.10.0"
   }
 }
