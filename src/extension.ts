@@ -10,14 +10,14 @@ import I18nDefinitionProvider from './I18nDefinitionProvider';
 const SELECTOR = ["ruby", "erb", "haml", "slim"];
 
 export async function activate(context: vscode.ExtensionContext) {
-  const globPettern = vscode.workspace.getConfiguration("railsI18n")
+  const globPattern = vscode.workspace.getConfiguration("railsI18n")
     .localeFilePattern;
-  const localePaths = await vscode.workspace.findFiles(globPettern);
+  const localePaths = await vscode.workspace.findFiles(globPattern);
   if (localePaths.length < 1) {
     return;
   }
 
-  const i18n = new I18n(globPettern);
+  const i18n = new I18n(globPattern);
   i18n.load();
 
   context.subscriptions.push(

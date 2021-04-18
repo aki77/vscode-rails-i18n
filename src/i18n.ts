@@ -19,7 +19,7 @@ export default class I18n {
   private translations: Map<string, Translation> = new Map();
   private fileWatchers: FileSystemWatcher[];
 
-  constructor(private globPettern: string) {
+  constructor(private globPattern: string) {
     this.fileWatchers = this.createFileWatchers();
   }
 
@@ -94,7 +94,7 @@ export default class I18n {
     const workspaceFolders = vscode.workspace
       .workspaceFolders as WorkspaceFolder[];
     const patterns = workspaceFolders.map(workspaceFolder => {
-      return new RelativePattern(workspaceFolder, this.globPettern);
+      return new RelativePattern(workspaceFolder, this.globPattern);
     });
     const fileWatchers = patterns.map(pattern => {
       return vscode.workspace.createFileSystemWatcher(pattern);
@@ -109,7 +109,7 @@ export default class I18n {
   }
 
   private async parse(): Promise<Record<string, Translation>> {
-    const localePaths = await vscode.workspace.findFiles(this.globPettern);
+    const localePaths = await vscode.workspace.findFiles(this.globPattern);
     try {
       const localeWithTranslationsEntries = await Promise.all(localePaths.map(({ path }) => {
         return new Parser(path).parse();
