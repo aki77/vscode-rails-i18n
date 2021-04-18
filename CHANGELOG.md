@@ -10,6 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Update dependencies
 - Add Licence
+- Improve the order of I18nLocalizeCompletionProvider items.
 
 ## 0.3.3
 
