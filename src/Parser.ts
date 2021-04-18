@@ -50,6 +50,9 @@ export class Parser {
   private getScalar(contents: any, absoluteKeys: string[]): Pair | undefined {
     const lastKey = absoluteKeys.pop();
     const rootScalar = contents.getIn(absoluteKeys);
+    if (!rootScalar.items) {
+      return undefined;
+    }
 
     return rootScalar.items.find((pair: Pair | null) => pair?.key?.value === lastKey);
   }
