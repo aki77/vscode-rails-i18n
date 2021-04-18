@@ -6,6 +6,7 @@ import I18nLocalizeCompletionProvider from "./I18nLocalizeCompletionProvider";
 import I18nHoverProvider from "./I18nHoverProvider";
 import I18nCodeActionProvider from "./I18nCodeActionProvider";
 import I18nDefinitionProvider from './I18nDefinitionProvider';
+import { commands } from "vscode";
 
 const SELECTOR = ["ruby", "erb", "haml", "slim"];
 
@@ -65,6 +66,12 @@ export async function activate(context: vscode.ExtensionContext) {
       SELECTOR,
       new I18nDefinitionProvider(i18n)
     )
+  );
+
+  context.subscriptions.push(
+    commands.registerCommand("railsI18n.reload", () => {
+      i18n.load();
+    })
   );
 }
 

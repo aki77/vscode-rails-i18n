@@ -27,6 +27,13 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "railsI18n.reload",
+        "category": "Rails I18n",
+        "title": "Reload locale files"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "Rails I18n Configuration",

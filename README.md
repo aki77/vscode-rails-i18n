@@ -35,6 +35,10 @@ This extension contributes the following settings:
 - `railsI18n.localeFilePattern`: `config/locales/*.yml`
 - `railsI18n.priorityOfLocales`: `["en"]`
 
+## Commands
+
+- `railsI18n.reload`: Reload locale files
+
 ## TODO
 
 - [ ] Completion of activerecord error message
