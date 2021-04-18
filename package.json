@@ -4,6 +4,7 @@
   "description": "Completion, Hover and QuickFix provider for Rails I18n.",
   "version": "0.3.3",
   "publisher": "aki77",
+  "license": "MIT",
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.46.0"
