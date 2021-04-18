@@ -7,8 +7,7 @@ import {
   Position
 } from "vscode";
 import I18n from "./i18n";
-
-const escapeStringRegexp = require("escape-string-regexp");
+import escapeStringRegexp from "escape-string-regexp";
 
 const MTTHOD_NAME_SUFFIXES = [
   {

@@ -9,9 +9,8 @@ import {
   Range,
   Position
 } from "vscode";
+import escapeStringRegexp from "escape-string-regexp";
 import I18n from "./i18n";
-
-const escapeStringRegexp = require("escape-string-regexp");
 
 export default class I18nTranslatePrefixCompletionProvider
   implements CompletionItemProvider {
