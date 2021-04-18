@@ -32,10 +32,10 @@ export default class I18nTranslatePrefixCompletionProvider
       return null;
     }
 
-    return this.buildCompletinItems(document);
+    return this.buildCompletionItems(document);
   }
 
-  private buildCompletinItems(document: TextDocument) {
+  private buildCompletionItems(document: TextDocument) {
     const relativePath = workspace.asRelativePath(document.uri);
     const paths = [];
     paths.push(...path.dirname(relativePath).split(path.sep));

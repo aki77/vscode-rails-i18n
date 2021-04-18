@@ -9,7 +9,7 @@ import {
 import I18n from "./i18n";
 import escapeStringRegexp from "escape-string-regexp";
 
-const MTTHOD_NAME_SUFFIXES = [
+const METHOD_NAME_SUFFIXES = [
   {
     type: "date",
     suffixes: ["_on", "_date"]
@@ -21,7 +21,7 @@ const MTTHOD_NAME_SUFFIXES = [
 ];
 
 const typeOfMethodName = (methodName: string) => {
-  const value = MTTHOD_NAME_SUFFIXES.find(({ suffixes }) =>
+  const value = METHOD_NAME_SUFFIXES.find(({ suffixes }) =>
     suffixes.some(suffix => methodName.endsWith(suffix))
   );
   return value ? value.type : null;
@@ -50,10 +50,10 @@ export default class I18nLocalizeCompletionProvider
     }
 
     const methodType = typeOfMethodName(matches[1]);
-    return this.buildCompletinItems(methodType);
+    return this.buildCompletionItems(methodType);
   }
 
-  private buildCompletinItems(methodType: string | null) {
+  private buildCompletionItems(methodType: string | null) {
     return Array.from(this.i18n.entries())
       .filter(([key]) => {
         if (methodType) {

@@ -33,10 +33,10 @@ export default class I18nTranslateCompletionProvider
       document.getWordRangeAtPosition(position, /[a-zA-Z0-9_.]+/) ||
       // NOTE: when trigger characters
       new Range(position, position);
-    return this.buildCompletinItems(range);
+    return this.buildCompletionItems(range);
   }
 
-  private buildCompletinItems(range: Range) {
+  private buildCompletionItems(range: Range) {
     return Array.from(this.i18n.entries()).map(([key, translation]) => {
       const item = new CompletionItem(key, CompletionItemKind.Keyword);
       item.documentation = translation.value;
