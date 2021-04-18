@@ -10,6 +10,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - `railsI18n.reload` command
 
+### Changed
+
+- Improved the behavior of I18nLocalizeCompletionProvider.
+
 ## 0.3.4
 
 ### Changed

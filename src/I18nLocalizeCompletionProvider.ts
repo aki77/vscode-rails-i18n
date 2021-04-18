@@ -9,22 +9,24 @@ import {
 import I18n from "./i18n";
 import escapeStringRegexp from "escape-string-regexp";
 
+type LocalizeType = 'date' | 'time';
+
 const METHOD_NAME_SUFFIXES = [
   {
-    type: "date",
-    suffixes: ["_on", "_date"]
+    type: "date" as const,
+    suffixes: ["_on", "date", "day", "tomorrow"]
   },
   {
-    type: "time",
-    suffixes: ["_at", "_time", "_datetime"]
+    type: "time" as const,
+    suffixes: ["_at", "time", "now", ".in_time_zone"]
   }
 ];
 
-const typeOfMethodName = (methodName: string) => {
+const typeOfMethodName = (methodName: string): LocalizeType | undefined => {
   const value = METHOD_NAME_SUFFIXES.find(({ suffixes }) =>
     suffixes.some(suffix => methodName.endsWith(suffix))
   );
-  return value ? value.type : null;
+  return value ? value.type : undefined;
 };
 
 export default class I18nLocalizeCompletionProvider
@@ -53,7 +55,7 @@ export default class I18nLocalizeCompletionProvider
     return this.buildCompletionItems(methodType);
   }
 
-  private buildCompletionItems(methodType: string | null) {
+  private buildCompletionItems(methodType?: LocalizeType) {
     return Array.from(this.i18n.entries())
       .filter(([key]) => {
         if (methodType) {
