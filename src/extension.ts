@@ -103,6 +103,8 @@ export async function activate(context: vscode.ExtensionContext) {
       goto(i18n);
     })
   );
+
+  return { i18n };
 }
 
 export function deactivate() {}
