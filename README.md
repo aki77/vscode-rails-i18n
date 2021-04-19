@@ -38,6 +38,7 @@ This extension contributes the following settings:
 ## Commands
 
 - `railsI18n.reload`: Reload locale files
+- `railsI18n.gotoTranslation`: Go to Translation
 
 ## TODO
 

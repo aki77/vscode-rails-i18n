@@ -32,6 +32,11 @@
         "command": "railsI18n.reload",
         "category": "Rails I18n",
         "title": "Reload locale files"
+      },
+      {
+        "command": "railsI18n.gotoTranslation",
+        "category": "Rails I18n",
+        "title": "Go to Translation"
       }
     ],
     "configuration": {

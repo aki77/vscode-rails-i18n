@@ -43,7 +43,7 @@ export class Parser {
       const scalar = this.getScalar(document.contents, absoluteKeys);
       const pos = localeText.positionAt(scalar ? scalar.key.range[0] : 0);
 
-      return [key, { locale, path: this.path, value, range: new Range(pos, pos) }];
+      return [key, { locale, path: this.path, value: value ?? '', range: new Range(pos, pos) }];
     }));
   }
 

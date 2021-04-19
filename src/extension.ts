@@ -1,17 +1,43 @@
-import * as vscode from "vscode";
-import I18n from "./i18n";
-import I18nTranslateCompletionProvider from "./I18nTranslateCompletionProvider";
-import I18nTranslatePrefixCompletionProvider from "./I18nTranslatePrefixCompletionProvider";
-import I18nLocalizeCompletionProvider from "./I18nLocalizeCompletionProvider";
-import I18nHoverProvider from "./I18nHoverProvider";
-import I18nCodeActionProvider from "./I18nCodeActionProvider";
+import * as vscode from 'vscode';
+import I18n from './i18n';
+import I18nTranslateCompletionProvider from './I18nTranslateCompletionProvider';
+import I18nTranslatePrefixCompletionProvider from './I18nTranslatePrefixCompletionProvider';
+import I18nLocalizeCompletionProvider from './I18nLocalizeCompletionProvider';
+import I18nHoverProvider from './I18nHoverProvider';
+import I18nCodeActionProvider from './I18nCodeActionProvider';
 import I18nDefinitionProvider from './I18nDefinitionProvider';
-import { commands } from "vscode";
+import { commands } from 'vscode';
+import { Translation } from './Parser';
 
-const SELECTOR = ["ruby", "erb", "haml", "slim"];
+const SELECTOR = ['ruby', 'erb', 'haml', 'slim'];
+
+const goto = async (i18n: I18n) => {
+  const items: Array<
+    vscode.QuickPickItem & { translation: Translation }
+  > = Array.from(i18n.entries()).map(([key, translation]) => {
+    return {
+      label: key,
+      // NOTE: Workaround for unexpected value
+      detail: translation.value.toString(),
+      translation,
+    };
+  });
+
+  const selectedItem = await vscode.window.showQuickPick(items, {
+    matchOnDetail: true,
+  });
+  if (!selectedItem) {
+    return;
+  }
+
+  await vscode.window.showTextDocument(
+    vscode.Uri.file(selectedItem.translation.path),
+    { selection: selectedItem.translation.range }
+  );
+};
 
 export async function activate(context: vscode.ExtensionContext) {
-  const globPattern = vscode.workspace.getConfiguration("railsI18n")
+  const globPattern = vscode.workspace.getConfiguration('railsI18n')
     .localeFilePattern;
   const localePaths = await vscode.workspace.findFiles(globPattern);
   if (localePaths.length < 1) {
@@ -43,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       SELECTOR,
       new I18nLocalizeCompletionProvider(i18n),
-      ":"
+      ':'
     )
   );
 
@@ -69,8 +95,13 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    commands.registerCommand("railsI18n.reload", () => {
+    commands.registerCommand('railsI18n.reload', () => {
       i18n.load();
+    })
+  );
+  context.subscriptions.push(
+    commands.registerCommand('railsI18n.gotoTranslation', () => {
+      goto(i18n);
     })
   );
 }
