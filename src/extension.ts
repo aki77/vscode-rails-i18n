@@ -17,8 +17,7 @@ const goto = async (i18n: I18n) => {
   > = Array.from(i18n.entries()).map(([key, translation]) => {
     return {
       label: key,
-      // NOTE: Workaround for unexpected value
-      detail: translation.value.toString(),
+      detail: translation.value,
       translation,
     };
   });
