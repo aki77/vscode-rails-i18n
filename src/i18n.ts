@@ -104,7 +104,7 @@ export default class I18n {
     });
     fileWatchers.forEach(fileWatcher => {
       fileWatcher.onDidChange(() => {
-        this.loadDebounced()
+        this.loadDebounced();
       });
     });
 
