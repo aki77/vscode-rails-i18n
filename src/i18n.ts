@@ -9,6 +9,7 @@ import {
 } from "vscode";
 import sortBy from "lodash/sortBy";
 import arrayFlatten from "lodash/flatten";
+import debounce from "lodash/debounce";
 import escapeStringRegexp from "escape-string-regexp";
 import { priorityOfLocales } from "./utils";
 import { Parser, Translation } from './Parser';
@@ -90,6 +91,8 @@ export default class I18n {
     return !!document.getWordRangeAtPosition(position, this.i18nRegexp);
   }
 
+  private loadDebounced = debounce(this.load, 500);
+
   private createFileWatchers() {
     const workspaceFolders = vscode.workspace
       .workspaceFolders as WorkspaceFolder[];
@@ -101,7 +104,7 @@ export default class I18n {
     });
     fileWatchers.forEach(fileWatcher => {
       fileWatcher.onDidChange(() => {
-        this.load();
+        this.loadDebounced()
       });
     });
 
