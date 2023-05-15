@@ -9,7 +9,7 @@ import I18nDefinitionProvider from './I18nDefinitionProvider';
 import { commands } from 'vscode';
 import { Translation } from './Parser';
 
-const SELECTOR = ['ruby', 'erb', 'haml', 'slim'];
+const DEFAULT_SELECTOR = ['ruby', 'erb', 'haml', 'slim'];
 
 const goto = async (i18n: I18n) => {
   const items: Array<
@@ -48,7 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
-      SELECTOR,
+      DEFAULT_SELECTOR,
       new I18nTranslateCompletionProvider(i18n),
       "'",
       '"'
@@ -57,7 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
-      SELECTOR,
+      DEFAULT_SELECTOR,
       new I18nTranslatePrefixCompletionProvider(i18n),
       "'",
       '"'
@@ -66,7 +66,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
-      SELECTOR,
+      DEFAULT_SELECTOR,
       new I18nLocalizeCompletionProvider(i18n),
       ':'
     )
@@ -74,21 +74,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.languages.registerHoverProvider(
-      SELECTOR,
+      vscode.workspace.getConfiguration('railsI18n').languagesEnableHoverProvider ?? DEFAULT_SELECTOR,
       new I18nHoverProvider(i18n)
     )
   );
 
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
-      SELECTOR,
+      DEFAULT_SELECTOR,
       new I18nCodeActionProvider(i18n)
     )
   );
 
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(
-      SELECTOR,
+      DEFAULT_SELECTOR,
       new I18nDefinitionProvider(i18n)
     )
   );

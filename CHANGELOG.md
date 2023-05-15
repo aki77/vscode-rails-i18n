@@ -4,6 +4,16 @@ All notable changes to the "rails-i18n" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.7.0
+
+### Added
+
+- `railsI18n.languagesEnableHoverProvider` configuration
+
+### Changed
+
+- Update dependencies
+
 ## 0.6.2
 
 ### Changed

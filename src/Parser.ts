@@ -4,7 +4,7 @@ import { promisify } from "util";
 import { parseDocument, Document } from 'yaml';
 import { flatten } from "flat";
 import fromPairs from "lodash/fromPairs";
-import { Pair } from "yaml/types";
+import { type Pair } from "yaml";
 import { availableLocale } from "./utils";
 
 const readFileAsync = promisify(readFile);
@@ -47,13 +47,13 @@ export class Parser {
     }));
   }
 
-  private getScalar(contents: any, absoluteKeys: string[]): Pair | undefined {
+  private getScalar(contents: any, absoluteKeys: string[]): Pair<any, any> | undefined {
     const lastKey = absoluteKeys.pop();
     const rootScalar = contents.getIn(absoluteKeys);
     if (!rootScalar?.items) {
       return undefined;
     }
 
-    return rootScalar.items.find((pair: Pair | null) => pair?.key?.value === lastKey);
+    return rootScalar.items.find((pair: Pair<any, any> | null) => pair?.key?.value === lastKey);
   }
 }
