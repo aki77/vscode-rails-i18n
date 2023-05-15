@@ -20,10 +20,7 @@
     "url": "https://github.com/aki77/vscode-rails-i18n/issues"
   },
   "activationEvents": [
-    "onLanguage:ruby",
-    "onLanguage:haml",
-    "onLanguage:erb",
-    "onLanguage:slim"
+    "workspaceContains:config/application.rb"
   ],
   "main": "./out/extension.js",
   "contributes": {
