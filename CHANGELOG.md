@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## 0.7.0
 
+### Added
+
+- `railsI18n.languagesEnableHoverProvider` configuration
+
 ### Changed
 
 - Update dependencies

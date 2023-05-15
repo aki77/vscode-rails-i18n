@@ -81,6 +81,19 @@
             "en"
           ],
           "description": "Priority locales list"
+        },
+        "railsI18n.languagesEnableHoverProvider": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "ruby",
+            "erb",
+            "haml",
+            "slim"
+          ],
+          "description": "Languages to enable HoverProvider"
         }
       }
     }
