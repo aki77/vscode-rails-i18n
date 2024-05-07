@@ -17,8 +17,8 @@ export default class KeyDetector {
       // TODO: Support for controller
       return null;
     }
-    const [, , ...parts] = dirName.split("/");
-    const basename = path.basename(relativePath).split(".", 2)[0];
+    const [, , ...parts] = dirName.split("/").map(part => part.replace(/^_/, ""));
+    const basename = path.basename(relativePath).split(".", 2)[0].replace(/^_/, "");
 
     return [...parts, basename].join(".") + key;
   }
