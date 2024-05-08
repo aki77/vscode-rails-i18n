@@ -2,7 +2,6 @@ import { Range, workspace } from "vscode";
 import { readFile } from "fs";
 import { promisify } from "util";
 import { parseDocument, Document } from 'yaml';
-import { flatten } from "flat";
 import fromPairs from "lodash/fromPairs";
 import { type Pair } from "yaml";
 import { availableLocale } from "./utils";
@@ -35,6 +34,8 @@ export class Parser {
   }
 
   private async buildLocaleValues(locale: string, document: Document.Parsed, values: any): Promise<LocaleValues> {
+    // SEE: https://stackoverflow.com/questions/70620025/how-do-i-import-an-es6-javascript-module-in-my-vs-code-extension-written-in-type
+    const flatten = (await import('flat')).flatten;
     const flattenedValues = values ? flatten<any, Record<string, string>>(values) : {};
     const localeText = await workspace.openTextDocument(this.path);
 
