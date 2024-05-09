@@ -4,6 +4,13 @@ All notable changes to the "rails-i18n" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.8.0
+
+### Changed
+
+- Escape first character if it's underscore in file name to fix partials lookup (https://github.com/aki77/vscode-rails-i18n/pull/21)
+- Update dependencies
+
 ## 0.7.0
 
 ### Added
