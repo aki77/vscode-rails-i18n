@@ -102,15 +102,14 @@
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/flat": "5.0.2",
     "@types/js-yaml": "^4.0.0",
     "@types/lodash": "^4.14.157",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^16.x",
+    "@types/node": "^18.x",
     "@types/vscode": "^1.55.0",
     "@types/yaml": "^1.9.7",
-    "@typescript-eslint/eslint-plugin": "^5.46.1",
-    "@typescript-eslint/parser": "^5.46.1",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.30.0",
     "mocha": "^10.2.0",
     "typescript": "^5.0.4",
@@ -118,12 +117,12 @@
   },
   "dependencies": {
     "escape-string-regexp": "4.0.0",
-    "flat": "^5.0.0",
+    "flat": "^6.0.1",
     "lodash": "^4.17.19",
     "yaml": "^2.2.2"
   },
   "volta": {
-    "node": "16.20.0",
-    "yarn": "1.22.19"
+    "node": "18.20.2",
+    "yarn": "1.22.22"
   }
 }
