@@ -92,6 +92,21 @@
             "slim"
           ],
           "description": "Languages to enable HoverProvider"
+        },
+        "railsI18n.annotations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline annotations for I18n keys"
+        },
+        "railsI18n.annotationInPlace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show translation text inline with code (when annotations are enabled)"
+        },
+        "railsI18n.annotationMaxLength": {
+          "type": "number",
+          "default": 40,
+          "description": "Maximum length of inline annotation text"
         }
       }
     }

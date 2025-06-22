@@ -1,5 +1,6 @@
 import * as path from 'node:path'
-import { type TextDocument, workspace } from 'vscode'
+import { type TextDocument, workspace, Range } from 'vscode'
+import escapeStringRegexp from 'escape-string-regexp'
 
 export function isLazyLookupKey(key: string) {
   return key.startsWith('.')
@@ -25,4 +26,37 @@ export function asAbsoluteKey(key: string, document: TextDocument) {
     .replace(/^_/, '')
 
   return [...parts, basename].join('.') + key
+}
+
+/**
+ * ドキュメント内の全I18nキーとその位置を検出します
+ */
+export function getAllI18nKeys(
+  document: TextDocument,
+  translateMethods: string[]
+): Array<{ key: string; range: Range }> {
+  const text = document.getText()
+  const methods = translateMethods.map(escapeStringRegexp)
+  const regex = new RegExp(
+    `[^a-z.](?:${methods.join('|')})['"\\s(]+([a-zA-Z0-9_.]+)`,
+    'g'
+  )
+
+  const keys: Array<{ key: string; range: Range }> = []
+  let match: RegExpExecArray | null
+
+  // biome-ignore lint/suspicious/noAssignInExpressions: needed for regex exec loop
+  while ((match = regex.exec(text)) !== null) {
+    const keyText = match[1]
+    const keyStartIndex = match.index + match[0].indexOf(keyText)
+    const startPos = document.positionAt(keyStartIndex)
+    const endPos = document.positionAt(keyStartIndex + keyText.length)
+
+    keys.push({
+      key: keyText,
+      range: new Range(startPos, endPos),
+    })
+  }
+
+  return keys
 }

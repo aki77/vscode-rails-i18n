@@ -6,6 +6,7 @@ import I18nHoverProvider from './I18nHoverProvider.js'
 import I18nLocalizeCompletionProvider from './I18nLocalizeCompletionProvider.js'
 import I18nTranslateCompletionProvider from './I18nTranslateCompletionProvider.js'
 import I18nTranslatePrefixCompletionProvider from './I18nTranslatePrefixCompletionProvider.js'
+import I18nAnnotationProvider from './I18nAnnotationProvider.js'
 import I18n from './i18n.js'
 import type { Translation } from './Parser.js'
 
@@ -103,6 +104,10 @@ export async function activate(context: vscode.ExtensionContext) {
       goto(i18n)
     })
   )
+
+  // アノテーション機能の追加
+  const annotationProvider = new I18nAnnotationProvider(i18n)
+  context.subscriptions.push(annotationProvider)
 
   return { i18n }
 }
