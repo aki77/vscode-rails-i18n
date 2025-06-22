@@ -6,6 +6,7 @@
   "publisher": "aki77",
   "license": "MIT",
   "icon": "images/icon.png",
+  "type": "module",
   "engines": {
     "vscode": "^1.78.0"
   },
@@ -91,6 +92,21 @@
             "slim"
           ],
           "description": "Languages to enable HoverProvider"
+        },
+        "railsI18n.annotations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline annotations for I18n keys"
+        },
+        "railsI18n.annotationInPlace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show translation text inline with code (when annotations are enabled)"
+        },
+        "railsI18n.annotationMaxLength": {
+          "type": "number",
+          "default": 40,
+          "description": "Maximum length of inline annotation text"
         }
       }
     }
@@ -98,31 +114,28 @@
   "scripts": {
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
+    "lint": "biome lint src",
+    "format": "biome format src --write",
+    "check": "biome check src",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.4",
     "@types/js-yaml": "^4.0.0",
-    "@types/lodash": "^4.14.157",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.x",
+    "@types/node": "^22",
     "@types/vscode": "^1.55.0",
     "@types/yaml": "^1.9.7",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "eslint": "^8.30.0",
-    "mocha": "^10.2.0",
-    "typescript": "^5.0.4",
-    "vscode-test": "^1.3.0"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
-    "escape-string-regexp": "4.0.0",
+    "@std/collections": "npm:@jsr/std__collections",
+    "debounce": "^2.2.0",
+    "escape-string-regexp": "5.0.0",
     "flat": "^6.0.1",
-    "lodash": "^4.17.19",
     "yaml": "^2.2.2"
   },
   "volta": {
-    "node": "18.20.2",
+    "node": "22.16.0",
     "yarn": "1.22.22"
   }
 }
