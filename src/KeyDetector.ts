@@ -1,6 +1,6 @@
 import * as path from 'node:path'
-import { type TextDocument, workspace, Range } from 'vscode'
 import escapeStringRegexp from 'escape-string-regexp'
+import { Range, type TextDocument, workspace } from 'vscode'
 
 export function isLazyLookupKey(key: string) {
   return key.startsWith('.')

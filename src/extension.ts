@@ -1,12 +1,12 @@
 import * as vscode from 'vscode'
 import { commands } from 'vscode'
+import I18nAnnotationProvider from './I18nAnnotationProvider.js'
 import I18nCodeActionProvider from './I18nCodeActionProvider.js'
 import I18nDefinitionProvider from './I18nDefinitionProvider.js'
 import I18nHoverProvider from './I18nHoverProvider.js'
 import I18nLocalizeCompletionProvider from './I18nLocalizeCompletionProvider.js'
 import I18nTranslateCompletionProvider from './I18nTranslateCompletionProvider.js'
 import I18nTranslatePrefixCompletionProvider from './I18nTranslatePrefixCompletionProvider.js'
-import I18nAnnotationProvider from './I18nAnnotationProvider.js'
 import I18n from './i18n.js'
 import type { Translation } from './Parser.js'
 

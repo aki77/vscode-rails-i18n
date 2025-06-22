@@ -1,17 +1,17 @@
+import debounce from 'debounce'
 import {
+  type DecorationOptions,
+  type Disposable,
+  type Range,
+  type TextDocument,
+  type TextEditor,
+  type TextEditorDecorationType,
   window,
   workspace,
-  type DecorationOptions,
-  type Range,
-  type Disposable,
-  type TextEditorDecorationType,
-  type TextEditor,
-  type TextDocument,
 } from 'vscode'
-import debounce from 'debounce'
 import type I18n from './i18n.js'
-import { getTranslationForKey } from './TranslationHelper.js'
 import { getAllI18nKeys } from './KeyDetector.js'
+import { getTranslationForKey } from './TranslationHelper.js'
 
 export default class I18nAnnotationProvider implements Disposable {
   private disposables: Disposable[] = []
@@ -75,7 +75,7 @@ export default class I18nAnnotationProvider implements Disposable {
     const document = editor.document
     const config = workspace.getConfiguration('railsI18n')
 
-    // サポートされている言語かチェック
+    // Check if the language is supported
     const supportedLanguages = ['ruby', 'erb', 'haml', 'slim']
     if (!supportedLanguages.includes(document.languageId)) {
       this.clearDecorations(editor)
@@ -111,7 +111,7 @@ export default class I18nAnnotationProvider implements Disposable {
 
       if (!result) continue
 
-      // カーソルが範囲内にある場合はアノテーションを非表示
+      // Hide annotation when cursor is within the range
       const isEditing =
         selection &&
         ((selection.start.line <= range.start.line &&
@@ -120,7 +120,7 @@ export default class I18nAnnotationProvider implements Disposable {
             range.end.line <= selection.end.line))
 
       if (result.found && result.translation) {
-        // 翻訳が見つかった場合
+        // Translation found
         let displayText = result.translation.value
         if (displayText.length > maxLength) {
           displayText = `${displayText.substring(0, maxLength)}...`
@@ -141,7 +141,7 @@ export default class I18nAnnotationProvider implements Disposable {
           underlines.push({ range })
         }
       } else {
-        // 翻訳が見つからない場合
+        // Translation not found
         missing.push({ range })
       }
     }

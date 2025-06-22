@@ -1,7 +1,7 @@
-import type { TextDocument, Position } from 'vscode'
+import type { Position, TextDocument } from 'vscode'
 import type I18n from './i18n.js'
-import type { Translation } from './Parser.js'
 import { asAbsoluteKey } from './KeyDetector.js'
+import type { Translation } from './Parser.js'
 
 export interface TranslationResult {
   key: string
@@ -11,7 +11,7 @@ export interface TranslationResult {
 }
 
 /**
- * 指定されたキーの翻訳情報を取得します
+ * Retrieves the translation information for the specified key.
  */
 export function getTranslationForKey(
   i18n: I18n,
@@ -34,7 +34,7 @@ export function getTranslationForKey(
 }
 
 /**
- * 指定されたポジションにあるキーの翻訳情報を取得します
+ * Retrieves the translation information for the key at the specified position.
  */
 export function getTranslationForPosition(
   i18n: I18n,
