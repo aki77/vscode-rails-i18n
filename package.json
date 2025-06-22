@@ -104,16 +104,13 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.0",
     "@types/lodash": "^4.14.157",
-    "@types/mocha": "^10.0.1",
     "@types/node": "^18.x",
     "@types/vscode": "^1.55.0",
     "@types/yaml": "^1.9.7",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.30.0",
-    "mocha": "^10.2.0",
-    "typescript": "^5.0.4",
-    "vscode-test": "^1.3.0"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "escape-string-regexp": "4.0.0",
