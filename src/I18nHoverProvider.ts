@@ -1,27 +1,32 @@
-import { TextDocument, Position, HoverProvider, Hover } from "vscode";
-import I18n from "./i18n.js";
-import KeyDetector from "./KeyDetector.js";
+import {
+  Hover,
+  type HoverProvider,
+  type Position,
+  type TextDocument,
+} from 'vscode'
+import type I18n from './i18n.js'
+import { asAbsoluteKey } from './KeyDetector.js'
 
 export default class I18nHoverProvider implements HoverProvider {
   constructor(private i18n: I18n) {}
 
   public provideHover(document: TextDocument, position: Position) {
-    const keyAndRange = this.i18n.getKeyAndRange(document, position);
+    const keyAndRange = this.i18n.getKeyAndRange(document, position)
     if (!keyAndRange) {
-      return;
+      return
     }
 
-    const { key, range } = keyAndRange;
-    const normalizedKey = KeyDetector.asAbsoluteKey(key, document);
+    const { key, range } = keyAndRange
+    const normalizedKey = asAbsoluteKey(key, document)
     if (!normalizedKey) {
-      return;
+      return
     }
 
-    const translation = this.i18n.get(normalizedKey);
+    const translation = this.i18n.get(normalizedKey)
     if (!translation) {
-      return;
+      return
     }
 
-    return new Hover({ language: "text", value: translation.value }, range);
+    return new Hover({ language: 'text', value: translation.value }, range)
   }
 }

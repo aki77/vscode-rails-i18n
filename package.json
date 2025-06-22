@@ -99,17 +99,17 @@
   "scripts": {
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
+    "lint": "biome lint src",
+    "format": "biome format src --write",
+    "check": "biome check src",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.4",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^22",
     "@types/vscode": "^1.55.0",
     "@types/yaml": "^1.9.7",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "eslint": "^8.30.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
