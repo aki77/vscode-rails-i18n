@@ -6,6 +6,7 @@
   "publisher": "aki77",
   "license": "MIT",
   "icon": "images/icon.png",
+  "type": "module",
   "engines": {
     "vscode": "^1.78.0"
   },
@@ -103,7 +104,6 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.0",
-    "@types/lodash": "^4.14.157",
     "@types/node": "^22",
     "@types/vscode": "^1.55.0",
     "@types/yaml": "^1.9.7",
@@ -113,9 +113,10 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@std/collections": "npm:@jsr/std__collections",
+    "debounce": "^2.2.0",
     "escape-string-regexp": "4.0.0",
     "flat": "^6.0.1",
-    "lodash": "^4.17.19",
     "yaml": "^2.2.2"
   },
   "volta": {

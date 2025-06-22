@@ -10,7 +10,7 @@ import {
   Position
 } from "vscode";
 import escapeStringRegexp from "escape-string-regexp";
-import I18n from "./i18n";
+import I18n from "./i18n.js";
 
 export default class I18nTranslatePrefixCompletionProvider
   implements CompletionItemProvider {

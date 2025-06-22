@@ -2,9 +2,8 @@ import { Range, workspace } from "vscode";
 import { readFile } from "fs";
 import { promisify } from "util";
 import { parseDocument, Document } from 'yaml';
-import fromPairs from "lodash/fromPairs";
 import { type Pair } from "yaml";
-import { availableLocale } from "./utils";
+import { availableLocale } from "./utils.js";
 
 const readFileAsync = promisify(readFile);
 
@@ -39,7 +38,7 @@ export class Parser {
     const flattenedValues = values ? flatten<any, Record<string, string>>(values) : {};
     const localeText = await workspace.openTextDocument(this.path);
 
-    return fromPairs(Object.entries(flattenedValues).map(([key, value]) => {
+    return Object.fromEntries(Object.entries(flattenedValues).map(([key, value]) => {
       const absoluteKeys: [string, ...string[]] = [locale, ...key.split('.')];
       const scalar = this.getScalar(document.contents, absoluteKeys);
       const pos = localeText.positionAt(scalar ? scalar.key.range[0] : 0);

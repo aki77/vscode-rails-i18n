@@ -7,12 +7,11 @@ import {
   Range,
   Position,
 } from "vscode";
-import sortBy from "lodash/sortBy";
-import arrayFlatten from "lodash/flatten";
-import debounce from "lodash/debounce";
+import { sortBy } from '@std/collections';
+import debounce from "debounce";
 import escapeStringRegexp from "escape-string-regexp";
-import { priorityOfLocales } from "./utils";
-import { Parser, Translation } from './Parser';
+import { priorityOfLocales } from "./utils.js";
+import { Parser, Translation } from './Parser.js';
 
 const KEY_REGEXP = /[a-zA-Z0-9_.]+/;
 
@@ -117,10 +116,10 @@ export default class I18n {
       const localeWithTranslationsEntries = await Promise.all(localePaths.map(({ path }) => {
         return new Parser(path).parse();
       }));
-      const sortedLocaleWithTranslationsEntries = sortBy(arrayFlatten(localeWithTranslationsEntries), [([locale]) => {
+      const sortedLocaleWithTranslationsEntries = sortBy(localeWithTranslationsEntries.flat(), ([locale]) => {
         const index = priorityOfLocales().indexOf(locale);
         return index < 0 ? 100 : index + 1;
-      }]);
+      });
 
       const translationsArray = sortedLocaleWithTranslationsEntries.reverse().map(([, translations]) => translations);
       return Object.assign({}, ...translationsArray);

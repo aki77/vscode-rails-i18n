@@ -6,7 +6,7 @@ import {
   Range,
   Position
 } from "vscode";
-import I18n from "./i18n";
+import I18n from "./i18n.js";
 import escapeStringRegexp from "escape-string-regexp";
 
 type LocalizeType = 'date' | 'time';

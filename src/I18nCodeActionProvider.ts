@@ -6,8 +6,8 @@ import {
   CodeActionKind,
   WorkspaceEdit
 } from "vscode";
-import I18n from "./i18n";
-import KeyDetector from "./KeyDetector";
+import I18n from "./i18n.js";
+import KeyDetector from "./KeyDetector.js";
 
 export default class I18nCodeActionProvider implements CodeActionProvider {
   constructor(private i18n: I18n) {}

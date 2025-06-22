@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-import I18n from './i18n';
-import I18nTranslateCompletionProvider from './I18nTranslateCompletionProvider';
-import I18nTranslatePrefixCompletionProvider from './I18nTranslatePrefixCompletionProvider';
-import I18nLocalizeCompletionProvider from './I18nLocalizeCompletionProvider';
-import I18nHoverProvider from './I18nHoverProvider';
-import I18nCodeActionProvider from './I18nCodeActionProvider';
-import I18nDefinitionProvider from './I18nDefinitionProvider';
+import I18n from './i18n.js';
+import I18nTranslateCompletionProvider from './I18nTranslateCompletionProvider.js';
+import I18nTranslatePrefixCompletionProvider from './I18nTranslatePrefixCompletionProvider.js';
+import I18nLocalizeCompletionProvider from './I18nLocalizeCompletionProvider.js';
+import I18nHoverProvider from './I18nHoverProvider.js';
+import I18nCodeActionProvider from './I18nCodeActionProvider.js';
+import I18nDefinitionProvider from './I18nDefinitionProvider.js';
 import { commands } from 'vscode';
-import { Translation } from './Parser';
+import { Translation } from './Parser.js';
 
 const DEFAULT_SELECTOR = ['ruby', 'erb', 'haml', 'slim'];
 

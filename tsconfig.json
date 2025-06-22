@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "module": "Node16",
-    "target": "es6",
+    "module": "nodenext",
+    "target": "ESNext",
     "outDir": "out",
     "lib": [
-      "es6"
+      "ESNext",
     ],
     "sourceMap": true,
     "rootDir": "src",
