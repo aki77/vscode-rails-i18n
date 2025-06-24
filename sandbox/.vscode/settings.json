@@ -1,0 +1,22 @@
+{
+  "railsI18n.priorityOfLocales": ["en", "ja", "fr"],
+  "railsI18n.annotations": true,
+  "railsI18n.annotationInPlace": true,
+  "railsI18n.annotationMaxLength": 50,
+  "railsI18n.languagesEnableHoverProvider": ["ruby", "erb", "haml", "slim"],
+  "railsI18n.localeFilePattern": "config/locales/*.yml",
+  "railsI18n.translateMethods": ["I18n.translate", "I18n.t", "t"],
+  "railsI18n.localizeMethods": ["I18n.localize", "I18n.l", "l"],
+
+  "files.associations": {
+    "*.erb": "erb",
+    "*.haml": "haml",
+    "*.slim": "slim"
+  },
+
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+
+  "editor.suggest.showWords": false
+}

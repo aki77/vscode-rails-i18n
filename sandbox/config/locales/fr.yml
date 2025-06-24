@@ -1,0 +1,48 @@
+fr:
+  # User management (limited translations)
+  users:
+    title: "Gestion des utilisateurs"
+    index:
+      heading: "Tous les utilisateurs"
+      # missing: empty_state, search_placeholder
+      actions:
+        new: "Nouvel utilisateur"
+        edit: "Modifier"
+        # missing: delete, view
+    # missing: show section
+    form:
+      # missing: heading
+      labels:
+        name: "Nom complet"
+        email: "Adresse email"
+        # missing: role, status, bio
+      # missing: placeholders section
+      submit: "Enregistrer"
+      # missing: cancel
+
+  # Navigation (very limited)
+  navigation:
+    home: "Accueil"
+    users: "Utilisateurs"
+    # missing: settings, logout, profile, dashboard
+
+  # Common UI elements (minimal)
+  common:
+    buttons:
+      save: "Enregistrer"
+      cancel: "Annuler"
+      # missing: delete, edit, create, update, confirm, close
+    # missing: status section
+    messages:
+      success: "Opération réussie"
+      # missing: error, warning, info
+
+  # missing: errors section entirely
+
+  # Date and time formats (none)
+  # missing: date and time sections
+
+  # Application specific (minimal)
+  app:
+    name: "Démo Rails I18n"
+    # missing: tagline, version, footer

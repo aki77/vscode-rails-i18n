@@ -1,0 +1,72 @@
+.user-form
+  .form-header
+    %h1= t('users.form.heading')
+
+  = form_with model: @user, local: true, class: 'user-form-fields' do |form|
+    - if @user.errors.any?
+      .alert.alert-danger
+        %h4= t('errors.form_errors', count: @user.errors.count)
+        %ul
+          - @user.errors.full_messages.each do |message|
+            %li= message
+
+    .form-group
+      = form.label :name, t('users.form.labels.name'), class: 'form-label'
+      = form.text_field :name,
+        placeholder: t('users.form.placeholders.name'),
+        class: 'form-control'
+
+    .form-group
+      = form.label :email, t('users.form.labels.email'), class: 'form-label'
+      = form.email_field :email,
+        placeholder: t('users.form.placeholders.email'),
+        class: 'form-control'
+
+    .form-group
+      = form.label :role, t('users.form.labels.role'), class: 'form-label'
+      = form.select :role,
+        options_for_select([
+          [t('users.roles.admin'), 'admin'],
+          [t('users.roles.user'), 'user'],
+          [t('users.roles.moderator'), 'moderator']
+        ], @user.role),
+        { prompt: t('common.select_option') },
+        { class: 'form-control' }
+
+    .form-group
+      = form.label :status, t('users.form.labels.status'), class: 'form-label'
+      = form.select :status,
+        options_for_select([
+          [t('common.status.active'), 'active'],
+          [t('common.status.inactive'), 'inactive'],
+          [t('common.status.pending'), 'pending'],
+          [t('common.status.archived'), 'archived']
+        ], @user.status),
+        {},
+        { class: 'form-control' }
+
+    .form-group
+      = form.label :bio, t('users.form.labels.bio'), class: 'form-label'
+      = form.text_area :bio,
+        placeholder: t('users.form.placeholders.bio'),
+        rows: 4,
+        class: 'form-control'
+
+    .form-actions
+      = form.submit t('users.form.submit'), class: 'btn btn-primary'
+      = link_to t('users.form.cancel'), users_path, class: 'btn btn-secondary'
+
+  -# Example of lazy lookup in HAML comments
+  -# = t('.help_text')  # Would look for users.form.help_text
+
+  -# Example of conditional translation
+  - if @user.persisted?
+    .form-footer
+      %p= t('users.form.edit_note', name: @user.name)
+  - else
+    .form-footer
+      %p= t('users.form.create_note')
+
+  -# Example of missing translation (will be highlighted)
+  .experimental-section
+    %p= t('users.form.experimental_feature')  # This key doesn't exist

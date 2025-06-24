@@ -1,0 +1,60 @@
+<div class="user-profile">
+  <div class="header">
+    <h1><%= t('users.show.heading') %></h1>
+    <div class="actions">
+      <%= link_to t('users.show.actions.edit'), edit_user_path(@user),
+          class: 'btn btn-primary' %>
+      <%= link_to t('users.show.actions.back'), users_path,
+          class: 'btn btn-secondary' %>
+    </div>
+  </div>
+
+  <div class="user-details">
+    <h2><%= t('users.show.details') %></h2>
+
+    <dl class="details-list">
+      <dt><%= t('users.form.labels.name') %></dt>
+      <dd><%= @user.name %></dd>
+
+      <dt><%= t('users.form.labels.email') %></dt>
+      <dd><%= @user.email %></dd>
+
+      <dt><%= t('users.form.labels.role') %></dt>
+      <dd><%= @user.role_label %></dd>
+
+      <dt><%= t('users.form.labels.status') %></dt>
+      <dd class="status <%= @user.status %>">
+        <%= @user.status_label %>
+      </dd>
+
+      <% if @user.bio.present? %>
+        <dt><%= t('users.form.labels.bio') %></dt>
+        <dd class="bio"><%= simple_format(@user.bio) %></dd>
+      <% end %>
+    </dl>
+  </div>
+
+  <!-- Example of date localization -->
+  <div class="metadata">
+    <p>
+      <strong><%= t('common.created_at') %>:</strong>
+      <%= l(@user.created_at, format: :long) %>
+    </p>
+    <p>
+      <strong><%= t('common.updated_at') %>:</strong>
+      <%= l(@user.updated_at, format: :short) %>
+    </p>
+  </div>
+
+  <!-- Example with interpolation -->
+  <div class="stats">
+    <p><%= t('users.stats.member_since', date: l(@user.created_at, format: :short)) %></p>
+  </div>
+
+  <!-- Lazy lookup examples -->
+  <div class="profile-actions">
+    <%= link_to t('.edit_profile'), edit_user_path(@user) %> <!-- users.show.edit_profile -->
+    <%= link_to t('.delete_account'), user_path(@user), method: :delete,
+        confirm: t('.confirm_delete') %> <!-- users.show.confirm_delete -->
+  </div>
+</div>
