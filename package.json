@@ -117,15 +117,19 @@
     "lint": "biome lint src",
     "format": "biome format src --write",
     "check": "biome check src",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:run": "vitest run"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.4",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^22",
-    "@types/vscode": "^1.55.0",
+    "@types/vscode": "^1.101.0",
     "@types/yaml": "^1.9.7",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@std/collections": "npm:@jsr/std__collections",

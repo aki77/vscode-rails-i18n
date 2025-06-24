@@ -29,7 +29,7 @@ export function asAbsoluteKey(key: string, document: TextDocument) {
 }
 
 /**
- * ドキュメント内の全I18nキーとその位置を検出します
+ * Detects all I18n keys and their locations in the document
  */
 export function getAllI18nKeys(
   document: TextDocument,
@@ -38,7 +38,7 @@ export function getAllI18nKeys(
   const text = document.getText()
   const methods = translateMethods.map(escapeStringRegexp)
   const regex = new RegExp(
-    `[^a-z.](?:${methods.join('|')})['"\\s(]+([a-zA-Z0-9_.]+)`,
+    `(?:[^a-z.']|^)(?:${methods.join('|')})['"\\s(]+([a-zA-Z0-9_.]+)`,
     'g'
   )
 
