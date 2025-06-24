@@ -30,11 +30,12 @@ export function asAbsoluteKey(key: string, document: TextDocument) {
 
 /**
  * Detects all I18n keys and their locations in the document
+ * Processes in chunks to avoid blocking the UI thread for large files
  */
-export function getAllI18nKeys(
+export async function getAllI18nKeys(
   document: TextDocument,
   translateMethods: string[]
-): Array<{ key: string; range: Range }> {
+): Promise<Array<{ key: string; range: Range }>> {
   const text = document.getText()
   const methods = translateMethods.map(escapeStringRegexp)
   const regex = new RegExp(
@@ -43,6 +44,8 @@ export function getAllI18nKeys(
   )
 
   const keys: Array<{ key: string; range: Range }> = []
+  const CHUNK_SIZE = 100 // Process in chunks to avoid blocking UI
+  let processedCount = 0
   let match: RegExpExecArray | null
 
   // biome-ignore lint/suspicious/noAssignInExpressions: needed for regex exec loop
@@ -56,6 +59,12 @@ export function getAllI18nKeys(
       key: keyText,
       range: new Range(startPos, endPos),
     })
+
+    processedCount++
+    // Yield control back to the event loop periodically to avoid blocking
+    if (processedCount % CHUNK_SIZE === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    }
   }
 
   return keys
