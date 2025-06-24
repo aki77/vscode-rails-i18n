@@ -132,7 +132,6 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@std/collections": "npm:@jsr/std__collections",
     "debounce": "^2.2.0",
     "escape-string-regexp": "5.0.0",
     "flat": "^6.0.1",
