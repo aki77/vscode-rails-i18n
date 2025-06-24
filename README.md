@@ -1,5 +1,8 @@
 # Rails I18n
 
+[![CI](https://github.com/aki77/vscode-rails-i18n/actions/workflows/ci.yml/badge.svg)](https://github.com/aki77/vscode-rails-i18n/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/aki77/vscode-rails-i18n/actions/workflows/quality.yml/badge.svg)](https://github.com/aki77/vscode-rails-i18n/actions/workflows/quality.yml)
+
 Completion, Hover and QuickFix provider for Rails I18n.
 
 ## Features
