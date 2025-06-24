@@ -5,6 +5,7 @@
     "outDir": "out",
     "lib": [
       "ESNext",
+      "WebWorker"
     ],
     "sourceMap": true,
     "rootDir": "src",
