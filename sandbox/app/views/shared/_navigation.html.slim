@@ -1,0 +1,67 @@
+nav.main-navigation
+  .nav-brand
+    = link_to root_path, class: 'brand-link' do
+      = t('app.name')
+
+  ul.nav-menu
+    li.nav-item
+      = link_to t('navigation.home'), root_path, class: nav_link_class('home')
+
+    li.nav-item
+      = link_to t('navigation.users'), users_path, class: nav_link_class('users')
+
+    li.nav-item.dropdown
+      a.nav-link.dropdown-toggle href="#" data-toggle="dropdown"
+        = t('navigation.settings')
+      ul.dropdown-menu
+        li
+          = link_to t('navigation.profile'), profile_path, class: 'dropdown-item'
+        li
+          = link_to t('settings.preferences'), settings_path, class: 'dropdown-item'
+        li.divider
+        li
+          = link_to t('navigation.logout'), logout_path,
+            method: :delete,
+            class: 'dropdown-item',
+            confirm: t('auth.confirm_logout')
+
+  .nav-user-section
+    - if user_signed_in?
+      .user-info
+        span.user-name = current_user.name
+        span.user-role = current_user.role_label
+
+      .user-actions
+        = link_to profile_path, class: 'btn btn-sm btn-outline',
+          title: t('navigation.profile') do
+          i.icon-user
+
+        = link_to logout_path, method: :delete,
+          class: 'btn btn-sm btn-outline',
+          title: t('navigation.logout'),
+          confirm: t('auth.confirm_logout') do
+          i.icon-logout
+    - else
+      .auth-actions
+        = link_to t('auth.login'), login_path, class: 'btn btn-sm btn-primary'
+        = link_to t('auth.signup'), signup_path, class: 'btn btn-sm btn-secondary'
+
+/ Example of lazy lookup in Slim
+.navigation-footer
+  p = t('.footer_text')  / Would look for shared.navigation.footer_text
+
+/ Example of missing translation
+.beta-features
+  p = t('navigation.beta.features')  / This key doesn't exist
+
+/ Example with date localization
+.site-info
+  p = t('app.last_updated', date: l(Date.current, format: :short))
+
+/ Conditional translation example
+- if Rails.env.development?
+  .dev-notice
+    p = t('app.development_mode')
+- else
+  .prod-notice
+    p = t('app.production_mode')

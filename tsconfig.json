@@ -19,6 +19,7 @@
   "exclude": [
     "node_modules",
     ".vscode-test",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "sandbox"
   ]
 }

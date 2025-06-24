@@ -1,4 +1,3 @@
-import { sortBy } from '@std/collections'
 import debounce from 'debounce'
 import escapeStringRegexp from 'escape-string-regexp'
 import * as vscode from 'vscode'
@@ -16,7 +15,7 @@ import { priorityOfLocales } from './utils.js'
 const KEY_REGEXP = /[a-zA-Z0-9_.]+/
 
 export default class I18n {
-  private translations: Map<string, Translation> = new Map()
+  private localeTranslations: Map<string, Map<string, Translation>> = new Map()
   private fileWatchers: FileSystemWatcher[]
 
   constructor(private globPattern: string) {
@@ -24,18 +23,37 @@ export default class I18n {
   }
 
   public dispose() {
-    this.translations.clear()
+    this.localeTranslations.clear()
     this.fileWatchers.map((fileWatcher) => {
       fileWatcher.dispose()
     })
   }
 
-  public get(key: string) {
-    return this.translations.get(key)
+  public get(key: string): Translation | undefined {
+    const primaryLocale = priorityOfLocales()[0]
+    if (!primaryLocale) return undefined
+
+    const localeMap = this.localeTranslations.get(primaryLocale)
+    return localeMap?.get(key)
   }
 
-  public entries() {
-    return this.translations.entries()
+  public entries(): IterableIterator<[string, Translation]> {
+    const primaryLocale = priorityOfLocales()[0]
+    if (!primaryLocale) {
+      return new Map<string, Translation>().entries()
+    }
+
+    const localeMap = this.localeTranslations.get(primaryLocale)
+    return localeMap?.entries() ?? new Map<string, Translation>().entries()
+  }
+
+  public getByLocale(key: string, locale: string): Translation | undefined {
+    const localeMap = this.localeTranslations.get(locale)
+    return localeMap?.get(key)
+  }
+
+  public getAvailableLocales(): string[] {
+    return Array.from(this.localeTranslations.keys())
   }
 
   public load() {
@@ -45,9 +63,9 @@ export default class I18n {
     }
 
     vscode.window.withProgress(progressOptions, async () => {
-      this.translations.clear()
-      const translations = await this.parse()
-      this.translations = new Map(Object.entries(translations))
+      this.localeTranslations.clear()
+      const result = await this.parse()
+      this.localeTranslations = result
     })
   }
 
@@ -110,7 +128,7 @@ export default class I18n {
     return fileWatchers
   }
 
-  private async parse(): Promise<Record<string, Translation>> {
+  private async parse(): Promise<Map<string, Map<string, Translation>>> {
     const localePaths = await vscode.workspace.findFiles(this.globPattern)
     try {
       const localeWithTranslationsEntries = await Promise.all(
@@ -118,18 +136,25 @@ export default class I18n {
           return new Parser(path).parse()
         })
       )
-      const sortedLocaleWithTranslationsEntries = sortBy(
-        localeWithTranslationsEntries.flat(),
-        ([locale]) => {
-          const index = priorityOfLocales().indexOf(locale)
-          return index < 0 ? 100 : index + 1
-        }
-      )
 
-      const translationsArray = sortedLocaleWithTranslationsEntries
-        .reverse()
-        .map(([, translations]) => translations)
-      return Object.assign({}, ...translationsArray)
+      // Building data by language (integrating translations from the same locale)
+      const byLocale = new Map<string, Map<string, Translation>>()
+      for (const [
+        locale,
+        translations,
+      ] of localeWithTranslationsEntries.flat()) {
+        const existingMap =
+          byLocale.get(locale) ?? new Map<string, Translation>()
+
+        // Add a new translation to an existing translation
+        for (const [key, translation] of Object.entries(translations)) {
+          existingMap.set(key, translation)
+        }
+
+        byLocale.set(locale, existingMap)
+      }
+
+      return byLocale
     } catch (error) {
       console.error(error)
       throw error

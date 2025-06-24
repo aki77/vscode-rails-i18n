@@ -1,0 +1,91 @@
+ja:
+  # User management
+  users:
+    title: "ユーザー管理"
+    index:
+      heading: "全ユーザー"
+      empty_state: "ユーザーが見つかりません"
+      search_placeholder: "ユーザーを検索..."
+      actions:
+        new: "新規ユーザー"
+        edit: "編集"
+        delete: "削除"
+        # missing: view
+    show:
+      heading: "ユーザープロフィール"
+      details: "ユーザー詳細"
+      actions:
+        edit: "ユーザーを編集"
+        back: "ユーザー一覧に戻る"
+    form:
+      heading: "ユーザーフォーム"
+      labels:
+        name: "氏名"
+        email: "メールアドレス"
+        role: "役割"
+        status: "ステータス"
+        # missing: bio
+      placeholders:
+        name: "氏名を入力"
+        email: "メールアドレスを入力"
+        bio: "自己紹介を入力"
+      submit: "ユーザーを保存"
+      cancel: "キャンセル"
+
+  # Navigation
+  navigation:
+    home: "ホーム"
+    users: "ユーザー"
+    settings: "設定"
+    logout: "ログアウト"
+    profile: "マイプロフィール"
+    # missing: dashboard
+
+  # Common UI elements
+  common:
+    buttons:
+      save: "保存"
+      cancel: "キャンセル"
+      delete: "削除"
+      edit: "編集"
+      create: "作成"
+      update: "更新"
+      # missing: confirm, close
+    status:
+      active: "アクティブ"
+      inactive: "非アクティブ"
+      pending: "保留中"
+      # missing: archived
+    messages:
+      success: "操作が正常に完了しました"
+      error: "エラーが発生しました"
+      # missing: warning, info
+
+  # Validation messages (some missing)
+  errors:
+    messages:
+      blank: "を入力してください"
+      invalid: "が正しくありません"
+      taken: "はすでに使用されています"
+      # missing: too_short, too_long
+
+  # Date and time formats
+  date:
+    formats:
+      default: "%Y年%m月%d日"
+      short: "%m月%d日"
+      long: "%Y年%m月%d日"
+
+  time:
+    formats:
+      default: "%Y年%m月%d日 %H:%M:%S"
+      # missing: short, long
+
+  # Application specific (partially translated)
+  app:
+    name: "Rails I18n デモ"
+    tagline: "国際化機能のデモンストレーション"
+    # missing: version
+    footer:
+      copyright: "© 2024 Rails I18n デモ. All rights reserved."
+      # missing: privacy, terms

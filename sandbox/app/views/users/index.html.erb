@@ -1,0 +1,67 @@
+<div class="users-index">
+  <div class="header">
+    <h1><%= t('users.index.heading') %></h1>
+    <div class="actions">
+      <%= link_to t('users.index.actions.new'), new_user_path, class: 'btn btn-primary' %>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <%= form_with url: users_path, method: :get, local: true, class: 'search-form' do |form| %>
+      <%= form.text_field :search,
+          placeholder: t('users.index.search_placeholder'),
+          value: params[:search],
+          class: 'form-control' %>
+      <%= form.submit t('common.buttons.search'), class: 'btn btn-secondary' %>
+    <% end %>
+  </div>
+
+  <% if @users.any? %>
+    <div class="users-grid">
+      <% @users.each do |user| %>
+        <div class="user-card">
+          <h3><%= user.name %></h3>
+          <p class="email"><%= user.email %></p>
+          <p class="status">
+            <span class="label"><%= t('users.form.labels.status') %>:</span>
+            <span class="value <%= user.status %>"><%= user.status_label %></span>
+          </p>
+
+          <div class="card-actions">
+            <%= link_to t('users.index.actions.view'), user_path(user),
+                class: 'btn btn-sm btn-outline' %>
+            <%= link_to t('users.index.actions.edit'), edit_user_path(user),
+                class: 'btn btn-sm btn-secondary' %>
+            <%= link_to t('users.index.actions.delete'), user_path(user),
+                method: :delete,
+                confirm: t('common.confirm_delete'),
+                class: 'btn btn-sm btn-danger' %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p><%= t('users.index.empty_state') %></p>
+      <%= link_to t('users.index.actions.new'), new_user_path, class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+
+  <!-- Example of lazy lookup (relative to current namespace) -->
+  <div class="page-info">
+    <p><%= t('.page_info') %></p> <!-- Will look for users.index.page_info -->
+    <p><%= t('.total_count', count: @users.count) %></p> <!-- With interpolation -->
+  </div>
+
+  <!-- Example of missing translation (will be highlighted) -->
+  <div class="experimental-feature">
+    <p><%= t('users.experimental.feature') %></p> <!-- This key doesn't exist -->
+  </div>
+</div>
+
+<!-- Navigation breadcrumb using translations -->
+<nav class="breadcrumb">
+  <%= link_to t('navigation.home'), root_path %>
+  <span class="separator">/</span>
+  <span class="current"><%= t('navigation.users') %></span>
+</nav>

@@ -9,6 +9,7 @@ import {
   window,
   workspace,
 } from 'vscode'
+import { MISSING_TRANSLATION_TEXT } from './constants.js'
 import type I18n from './i18n.js'
 import { getAllI18nKeys } from './KeyDetector.js'
 import { getTranslationForKey } from './TranslationHelper.js'
@@ -41,7 +42,7 @@ export default class I18nAnnotationProvider implements Disposable {
       backgroundColor: 'rgba(255, 255, 0, 0.2)',
       after: {
         color: '#ff6b6b',
-        contentText: ' [missing translation]',
+        contentText: ` ${MISSING_TRANSLATION_TEXT}`,
         fontStyle: 'italic',
       },
     })
@@ -119,7 +120,7 @@ export default class I18nAnnotationProvider implements Disposable {
           (selection.start.line <= range.end.line &&
             range.end.line <= selection.end.line))
 
-      if (result.found && result.translation) {
+      if (result.translation) {
         // Translation found
         let displayText = result.translation.value
         if (displayText.length > maxLength) {

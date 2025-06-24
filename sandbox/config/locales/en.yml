@@ -1,0 +1,96 @@
+en:
+  # User management
+  users:
+    title: "User Management"
+    index:
+      heading: "All Users"
+      empty_state: "No users found"
+      search_placeholder: "Search users..."
+      actions:
+        new: "New User"
+        edit: "Edit"
+        delete: "Delete"
+        view: "View Profile"
+    show:
+      heading: "User Profile"
+      details: "User Details"
+      actions:
+        edit: "Edit User"
+        back: "Back to Users"
+    form:
+      heading: "User Form"
+      labels:
+        name: "Full Name"
+        email: "Email Address"
+        role: "Role"
+        status: "Status"
+        bio: "Biography"
+      placeholders:
+        name: "Enter full name"
+        email: "Enter email address"
+        bio: "Tell us about yourself"
+      submit: "Save User"
+      cancel: "Cancel"
+
+  # Navigation
+  navigation:
+    home: "Home"
+    users: "Users"
+    settings: "Settings"
+    logout: "Logout"
+    profile: "My Profile"
+    dashboard: "Dashboard"
+
+  # Common UI elements
+  common:
+    buttons:
+      save: "Save"
+      cancel: "Cancel"
+      delete: "Delete"
+      edit: "Edit"
+      create: "Create"
+      update: "Update"
+      confirm: "Confirm"
+      close: "Close"
+    status:
+      active: "Active"
+      inactive: "Inactive"
+      pending: "Pending"
+      archived: "Archived"
+    messages:
+      success: "Operation completed successfully"
+      error: "An error occurred"
+      warning: "Please check your input"
+      info: "Information updated"
+
+  # Validation messages
+  errors:
+    messages:
+      blank: "can't be blank"
+      invalid: "is invalid"
+      taken: "has already been taken"
+      too_short: "is too short (minimum is %{count} characters)"
+      too_long: "is too long (maximum is %{count} characters)"
+
+  # Date and time formats
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%b %d"
+      long: "%B %d, %Y"
+
+  time:
+    formats:
+      default: "%a, %d %b %Y %H:%M:%S %z"
+      short: "%d %b %H:%M"
+      long: "%B %d, %Y %H:%M"
+
+  # Application specific
+  app:
+    name: "Rails I18n Demo"
+    tagline: "Demonstrating internationalization features"
+    version: "1.0.0"
+    footer:
+      copyright: "© 2024 Rails I18n Demo. All rights reserved."
+      privacy: "Privacy Policy"
+      terms: "Terms of Service"
