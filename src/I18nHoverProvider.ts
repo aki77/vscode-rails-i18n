@@ -9,6 +9,7 @@ import { MISSING_TRANSLATION_TEXT } from './constants.js'
 import type I18n from './i18n.js'
 import {
   getMultiLanguageTranslationForPosition,
+  type LocaleTranslationResult,
   type MultiLanguageTranslationResult,
 } from './TranslationHelper.js'
 import { escapeForMarkdown, escapeHtml } from './utils.js'
@@ -49,35 +50,59 @@ export default class I18nHoverProvider implements HoverProvider {
     result: MultiLanguageTranslationResult
   ): MarkdownString {
     const tableContent = this.createTranslationTable(result.localeResults)
-    const markdown = new MarkdownString(tableContent)
+    const markdown = new MarkdownString(tableContent, true)
     markdown.supportHtml = false
-    markdown.isTrusted = false
+    markdown.isTrusted = true
 
     return markdown
   }
 
   private createTranslationTable(
-    localeResults: Array<{ locale: string; translation?: { value: string } }>
+    localeResults: LocaleTranslationResult[]
   ): string {
+    if (localeResults.length === 0) {
+      return ''
+    }
+
     const rows: string[] = []
 
     for (const localeResult of localeResults) {
       const locale = escapeForMarkdown(localeResult.locale)
       let translation: string
+      let jumpIcon = ''
 
       if (localeResult.translation) {
         const value = localeResult.translation.value
         const truncatedValue =
           value.length > 100 ? `${value.substring(0, 100)}...` : value
         translation = escapeForMarkdown(truncatedValue)
+
+        // Create command URI for jumping to translation file
+        const commandArgs = {
+          locale: localeResult.locale,
+          key: 'translation', // This could be the actual key if needed
+          path: localeResult.translation.path,
+          range: {
+            start: {
+              line: localeResult.translation.range.start.line,
+              character: localeResult.translation.range.start.character,
+            },
+            end: {
+              line: localeResult.translation.range.end.line,
+              character: localeResult.translation.range.end.character,
+            },
+          },
+        }
+        const encodedArgs = encodeURIComponent(JSON.stringify(commandArgs))
+        jumpIcon = `[$(go-to-file)](command:railsI18n.gotoTranslationByLocale?${encodedArgs} "Jump to translation")`
       } else {
         translation = MISSING_TRANSLATION_TEXT
       }
 
-      rows.push(`| | ${locale} | | ${escapeHtml(translation)} | | `)
+      rows.push(`| ${jumpIcon} | ${locale} | | ${escapeHtml(translation)} | |`)
     }
 
-    // return rows.join('\n')
-    return `| | | | |\n|---|---:|---|---|\n${rows.join('\n')}\n| | | | |`
+    // Updated table structure with icon column and empty columns between
+    return `| | | | | |\n|---|---:|---|---|---|\n${rows.join('\n')}\n| | | | | |`
   }
 }

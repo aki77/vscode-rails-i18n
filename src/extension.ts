@@ -104,6 +104,38 @@ export async function activate(context: vscode.ExtensionContext) {
       goto(i18n)
     })
   )
+  context.subscriptions.push(
+    commands.registerCommand(
+      'railsI18n.gotoTranslationByLocale',
+      async (args: {
+        locale: string
+        key: string
+        path: string
+        range: {
+          start: { line: number; character: number }
+          end: { line: number; character: number }
+        }
+      }) => {
+        try {
+          const uri = vscode.Uri.file(args.path)
+          const range = new vscode.Range(
+            new vscode.Position(
+              args.range.start.line,
+              args.range.start.character
+            ),
+            new vscode.Position(args.range.end.line, args.range.end.character)
+          )
+          await vscode.window.showTextDocument(uri, { selection: range })
+        } catch (error: unknown) {
+          const message =
+            error instanceof Error ? error.message : 'Unknown error'
+          vscode.window.showErrorMessage(
+            `Failed to open translation file: ${args.path}. ${message}`
+          )
+        }
+      }
+    )
+  )
 
   // アノテーション機能の追加
   const annotationProvider = new I18nAnnotationProvider(i18n)

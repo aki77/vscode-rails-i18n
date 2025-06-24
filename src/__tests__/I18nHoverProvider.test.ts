@@ -74,11 +74,27 @@ describe('I18nHoverProvider Multi-Language Support', () => {
         localeResults: [
           {
             locale: 'en',
-            translation: { locale: 'en', value: 'Name', path: '/en.yml' },
+            translation: {
+              locale: 'en',
+              value: 'Name',
+              path: '/en.yml',
+              range: {
+                start: { line: 0, character: 0 },
+                end: { line: 0, character: 4 },
+              },
+            },
           },
           {
             locale: 'ja',
-            translation: { locale: 'ja', value: '名前', path: '/ja.yml' },
+            translation: {
+              locale: 'ja',
+              value: '名前',
+              path: '/ja.yml',
+              range: {
+                start: { line: 0, character: 0 },
+                end: { line: 0, character: 2 },
+              },
+            },
           },
           {
             locale: 'fr',
@@ -100,11 +116,21 @@ describe('I18nHoverProvider Multi-Language Support', () => {
       expect(result.content).toBeDefined()
       expect(result.range).toBeDefined()
 
-      // Check that the markdown content includes all locales in table format
+      // Check that the markdown content includes all locales in table format and jump icons
       const markdownString = result.content
-      expect(markdownString.value).toContain('| en | Name |')
-      expect(markdownString.value).toContain('| ja | 名前 |')
-      expect(markdownString.value).toContain('| fr | [missing translation] |')
+      expect(markdownString.value).toContain('Locale')
+      expect(markdownString.value).toContain('Translation')
+      expect(markdownString.value).toContain('en')
+      expect(markdownString.value).toContain('Name')
+      expect(markdownString.value).toContain('ja')
+      expect(markdownString.value).toContain('名前')
+      expect(markdownString.value).toContain('fr')
+      expect(markdownString.value).toContain('[missing translation]')
+      expect(markdownString.value).toContain('📂')
+      expect(markdownString.value).toContain(
+        'command:railsI18n.gotoTranslationByLocale'
+      )
+      expect(markdownString.isTrusted).toBe(true)
     })
 
     it('should return undefined when no translations found', () => {
@@ -182,11 +208,27 @@ describe('I18nHoverProvider Multi-Language Support', () => {
         localeResults: [
           {
             locale: 'en',
-            translation: { locale: 'en', value: 'Name', path: '/en.yml' },
+            translation: {
+              locale: 'en',
+              value: 'Name',
+              path: '/en.yml',
+              range: {
+                start: { line: 0, character: 0 },
+                end: { line: 0, character: 4 },
+              },
+            },
           },
           {
             locale: 'ja',
-            translation: { locale: 'ja', value: '名前', path: '/ja.yml' },
+            translation: {
+              locale: 'ja',
+              value: '名前',
+              path: '/ja.yml',
+              range: {
+                start: { line: 0, character: 0 },
+                end: { line: 0, character: 2 },
+              },
+            },
           },
           {
             locale: 'fr',
@@ -197,11 +239,18 @@ describe('I18nHoverProvider Multi-Language Support', () => {
 
       const markdown = hoverProvider.formatMultiLanguageTranslations(mockResult)
 
-      expect(markdown.value).toContain('| en | Name |')
-      expect(markdown.value).toContain('| ja | 名前 |')
-      expect(markdown.value).toContain('| fr | [missing translation] |')
+      expect(markdown.value).toContain('en')
+      expect(markdown.value).toContain('Name')
+      expect(markdown.value).toContain('ja')
+      expect(markdown.value).toContain('名前')
+      expect(markdown.value).toContain('fr')
+      expect(markdown.value).toContain('[missing translation]')
+      expect(markdown.value).toContain('📂')
+      expect(markdown.value).toContain(
+        'command:railsI18n.gotoTranslationByLocale'
+      )
       expect(markdown.supportHtml).toBe(false)
-      expect(markdown.isTrusted).toBe(false)
+      expect(markdown.isTrusted).toBe(true)
     })
 
     it('should handle empty localeResults', () => {
