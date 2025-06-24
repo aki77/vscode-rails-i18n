@@ -126,7 +126,7 @@ describe('I18nHoverProvider Multi-Language Support', () => {
       expect(markdownString.value).toContain('名前')
       expect(markdownString.value).toContain('fr')
       expect(markdownString.value).toContain('[missing translation]')
-      expect(markdownString.value).toContain('📂')
+      expect(markdownString.value).toContain('$(go-to-file)')
       expect(markdownString.value).toContain(
         'command:railsI18n.gotoTranslationByLocale'
       )
@@ -245,7 +245,7 @@ describe('I18nHoverProvider Multi-Language Support', () => {
       expect(markdown.value).toContain('名前')
       expect(markdown.value).toContain('fr')
       expect(markdown.value).toContain('[missing translation]')
-      expect(markdown.value).toContain('📂')
+      expect(markdown.value).toContain('$(go-to-file)')
       expect(markdown.value).toContain(
         'command:railsI18n.gotoTranslationByLocale'
       )
