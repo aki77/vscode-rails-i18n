@@ -66,7 +66,7 @@ export default class I18nAnnotationProvider implements Disposable {
     )
   }
 
-  private updateAnnotations() {
+  private async updateAnnotations() {
     const editor = window.activeTextEditor
     if (!editor) {
       return
@@ -87,7 +87,7 @@ export default class I18nAnnotationProvider implements Disposable {
       return
     }
 
-    const keys = getAllI18nKeys(document, this.i18n.translateMethods())
+    const keys = await getAllI18nKeys(document, this.i18n.translateMethods())
     const decorations = this.createDecorations(document, keys, config)
 
     this.applyDecorations(editor, decorations)
