@@ -118,7 +118,6 @@
     "format": "biome format src --write",
     "check": "biome check src",
     "watch": "tsc -watch -p ./",
-    "test": "vitest",
     "test:watch": "vitest --watch",
     "test:run": "vitest run"
   },

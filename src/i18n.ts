@@ -17,6 +17,7 @@ const KEY_REGEXP = /[a-zA-Z0-9_.]+/
 
 export default class I18n {
   private translations: Map<string, Translation> = new Map()
+  private localeTranslations: Map<string, Map<string, Translation>> = new Map()
   private fileWatchers: FileSystemWatcher[]
 
   constructor(private globPattern: string) {
@@ -25,6 +26,7 @@ export default class I18n {
 
   public dispose() {
     this.translations.clear()
+    this.localeTranslations.clear()
     this.fileWatchers.map((fileWatcher) => {
       fileWatcher.dispose()
     })
@@ -38,6 +40,15 @@ export default class I18n {
     return this.translations.entries()
   }
 
+  public getByLocale(key: string, locale: string): Translation | undefined {
+    const localeMap = this.localeTranslations.get(locale)
+    return localeMap?.get(key)
+  }
+
+  public getAvailableLocales(): string[] {
+    return Array.from(this.localeTranslations.keys())
+  }
+
   public load() {
     const progressOptions = {
       location: vscode.ProgressLocation.Window,
@@ -46,8 +57,10 @@ export default class I18n {
 
     vscode.window.withProgress(progressOptions, async () => {
       this.translations.clear()
-      const translations = await this.parse()
-      this.translations = new Map(Object.entries(translations))
+      this.localeTranslations.clear()
+      const result = await this.parse()
+      this.translations = new Map(Object.entries(result.merged))
+      this.localeTranslations = result.byLocale
     })
   }
 
@@ -110,7 +123,10 @@ export default class I18n {
     return fileWatchers
   }
 
-  private async parse(): Promise<Record<string, Translation>> {
+  private async parse(): Promise<{
+    merged: Record<string, Translation>
+    byLocale: Map<string, Map<string, Translation>>
+  }> {
     const localePaths = await vscode.workspace.findFiles(this.globPattern)
     try {
       const localeWithTranslationsEntries = await Promise.all(
@@ -129,7 +145,20 @@ export default class I18n {
       const translationsArray = sortedLocaleWithTranslationsEntries
         .reverse()
         .map(([, translations]) => translations)
-      return Object.assign({}, ...translationsArray)
+
+      // 言語別データの構築
+      const byLocale = new Map<string, Map<string, Translation>>()
+      for (const [
+        locale,
+        translations,
+      ] of localeWithTranslationsEntries.flat()) {
+        byLocale.set(locale, new Map(Object.entries(translations)))
+      }
+
+      return {
+        merged: Object.assign({}, ...translationsArray),
+        byLocale,
+      }
     } catch (error) {
       console.error(error)
       throw error
