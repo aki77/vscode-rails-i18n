@@ -20,6 +20,8 @@ Completion, Hover and QuickFix provider for Rails I18n.
 
 ![hover](https://i.gyazo.com/fc5f345b620222261072389a8cea2013.gif)
 
+The hover feature now supports **multiple languages**. When you hover over an I18n key, it displays translations for all languages configured in `priorityOfLocales`, in priority order. If a translation is missing for a particular language, it shows `[missing translation]` to indicate the absence.
+
 ### Inline Annotations
 
 Display translation text inline with I18n keys for better code readability.
