@@ -13,7 +13,7 @@
     <h2><%= t('users.show.details') %></h2>
 
     <dl class="details-list">
-      <dt><%= t('users.form.labels.name') %></dt>
+      <dt><%= User.human_attribute_name :name %></dt>
       <dd><%= @user.name %></dd>
 
       <dt><%= t('users.form.labels.email') %></dt>

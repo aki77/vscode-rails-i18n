@@ -89,3 +89,17 @@ ja:
     footer:
       copyright: "© 2024 Rails I18n デモ. All rights reserved."
       # missing: privacy, terms
+
+  # ActiveRecord attributes
+  activerecord:
+    attributes:
+      user:
+        name: "氏名"
+        email: "メールアドレス"
+        age: "年齢"
+        status: "アカウント状態"
+      product:
+        title: "商品名"
+        description: "商品説明"
+        price: "価格"
+        category: "カテゴリー"

@@ -17,8 +17,8 @@ import { escapeForMarkdown, escapeHtml } from './utils.js'
 export default class I18nHoverProvider implements HoverProvider {
   constructor(private i18n: I18n) {}
 
-  public provideHover(document: TextDocument, position: Position) {
-    const result = getMultiLanguageTranslationForPosition(
+  public async provideHover(document: TextDocument, position: Position) {
+    const result = await getMultiLanguageTranslationForPosition(
       this.i18n,
       document,
       position
@@ -35,7 +35,7 @@ export default class I18nHoverProvider implements HoverProvider {
       return
     }
 
-    const keyAndRange = this.i18n.getKeyAndRange(document, position)
+    const keyAndRange = await this.i18n.getKeyAndRange(document, position)
     if (!keyAndRange) {
       return
     }

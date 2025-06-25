@@ -15,7 +15,7 @@ export default class I18nDefinitionProvider implements DefinitionProvider {
     document: TextDocument,
     position: Position
   ): Promise<LocationLink[] | undefined> {
-    const keyAndRange = this.i18n.getKeyAndRange(document, position)
+    const keyAndRange = await this.i18n.getKeyAndRange(document, position)
     if (!keyAndRange) {
       return
     }

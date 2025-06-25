@@ -11,7 +11,7 @@ import {
 } from 'vscode'
 import { MISSING_TRANSLATION_TEXT } from './constants.js'
 import type I18n from './i18n.js'
-import { getAllI18nKeys } from './KeyDetector.js'
+import { getAllI18nKeys, getHumanAttributeNameKeys } from './KeyDetector.js'
 import { getTranslationForKey } from './TranslationHelper.js'
 
 export default class I18nAnnotationProvider implements Disposable {
@@ -88,8 +88,19 @@ export default class I18nAnnotationProvider implements Disposable {
       return
     }
 
-    const keys = await getAllI18nKeys(document, this.i18n.translateMethods())
-    const decorations = this.createDecorations(document, keys, config)
+    // Get both regular i18n keys and human_attribute_name keys
+    const [regularKeys, humanAttributeKeys] = await Promise.all([
+      getAllI18nKeys(document, this.i18n.translateMethods()),
+      getHumanAttributeNameKeys(document),
+    ])
+
+    // Combine both types of keys
+    const allKeys = [
+      ...regularKeys,
+      ...humanAttributeKeys.map((k) => ({ key: k.key, range: k.range })),
+    ]
+
+    const decorations = this.createDecorations(document, allKeys, config)
 
     this.applyDecorations(editor, decorations)
   }

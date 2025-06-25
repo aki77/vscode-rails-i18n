@@ -171,7 +171,7 @@ describe('TranslationHelper Multi-Language Support', () => {
   })
 
   describe('getMultiLanguageTranslationForPosition', () => {
-    it('should return translation results for position', () => {
+    it('should return translation results for position', async () => {
       const translations = {
         en: {
           'user.name': { locale: 'en', value: 'Name', path: '/en.yml' },
@@ -184,7 +184,7 @@ describe('TranslationHelper Multi-Language Support', () => {
       const mockI18n = createMockI18n(translations)
       const mockDocument = createMockDocument()
 
-      const result = getMultiLanguageTranslationForPosition(
+      const result = await getMultiLanguageTranslationForPosition(
         mockI18n,
         mockDocument,
         { line: 0, character: 0 }
@@ -195,18 +195,18 @@ describe('TranslationHelper Multi-Language Support', () => {
       expect(result.localeResults).toHaveLength(3) // en, ja, fr (fr is missing)
     })
 
-    it('should return undefined when no key found at position', () => {
+    it('should return undefined when no key found at position', async () => {
       const translations = {
         en: { 'user.name': { locale: 'en', value: 'Name' } },
       }
 
       const mockI18n = {
         ...createMockI18n(translations),
-        getKeyAndRange: () => null, // No key found at position
+        getKeyAndRange: async () => null, // No key found at position
       }
       const mockDocument = createMockDocument()
 
-      const result = getMultiLanguageTranslationForPosition(
+      const result = await getMultiLanguageTranslationForPosition(
         mockI18n,
         mockDocument,
         { line: 0, character: 0 }

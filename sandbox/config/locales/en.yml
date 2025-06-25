@@ -94,3 +94,17 @@ en:
       copyright: "© 2024 Rails I18n Demo. All rights reserved."
       privacy: "Privacy Policy"
       terms: "Terms of Service"
+
+  # ActiveRecord attributes
+  activerecord:
+    attributes:
+      user:
+        name: "Full Name"
+        email: "Email Address"
+        age: "Age"
+        status: "Account Status"
+      product:
+        title: "Product Title"
+        description: "Product Description"
+        price: "Price"
+        category: "Category"

@@ -12,8 +12,8 @@ import { asAbsoluteKey, isLazyLookupKey } from './KeyDetector.js'
 export default class I18nCodeActionProvider implements CodeActionProvider {
   constructor(private i18n: I18n) {}
 
-  public provideCodeActions(document: TextDocument, _range: Range) {
-    const keyAndRange = this.i18n.getKeyAndRange(document, _range.start)
+  public async provideCodeActions(document: TextDocument, _range: Range) {
+    const keyAndRange = await this.i18n.getKeyAndRange(document, _range.start)
     if (!keyAndRange) {
       return
     }

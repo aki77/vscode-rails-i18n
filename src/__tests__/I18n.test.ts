@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { Range, workspace, type Uri } from 'vscode'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Range, type Uri, workspace } from 'vscode'
 
 // Mock for VSCode API
 vi.mock('vscode', () => ({
@@ -27,10 +27,14 @@ vi.mock('../Parser.js', () => ({
 }))
 
 // Mock for utils
-vi.mock('../utils.js', () => ({
-  priorityOfLocales: vi.fn(() => ['en', 'ja']),
-  availableLocale: vi.fn(() => true),
-}))
+vi.mock('../utils.js', async (importOriginal) => {
+  const actual = (await importOriginal()) as any
+  return {
+    ...actual,
+    priorityOfLocales: vi.fn(() => ['en', 'ja']),
+    availableLocale: vi.fn(() => true),
+  }
+})
 
 describe('I18n MVP Features', () => {
   let I18n: any
@@ -374,6 +378,167 @@ describe('I18n MVP Features', () => {
       expect(result.has('ja')).toBe(true)
       const jaTranslations = result.get('ja')
       expect(jaTranslations.get('greeting').value).toBe('second value')
+    })
+  })
+
+  describe('getKeyAndRange', () => {
+    it('should detect regular i18n keys', async () => {
+      const i18n = new I18n('config/locales/*.yml')
+
+      const mockDocument = {
+        getText: vi.fn().mockImplementation((range?: any) => {
+          if (range) {
+            // When called with a range, return the text within that range
+            const fullText = 't("user.name")'
+            const start = range.start.character
+            const end = range.end.character
+            return fullText.substring(start, end)
+          }
+          // When called without arguments, return the full text
+          return 't("user.name")'
+        }),
+        positionAt: vi.fn().mockImplementation((offset: number) => {
+          const line = 0
+          const character = offset
+          return { line, character }
+        }),
+        offsetAt: vi.fn().mockImplementation((position: any) => {
+          return position.character
+        }),
+        lineAt: vi.fn().mockImplementation((lineNumber: number) => ({
+          range: {
+            start: { line: lineNumber, character: 0 },
+            end: { line: lineNumber, character: 100 },
+          },
+          text: 't("user.name")',
+        })),
+        getWordRangeAtPosition: vi.fn().mockReturnValue({
+          start: { line: 0, character: 3 },
+          end: { line: 0, character: 12 },
+        }),
+      }
+
+      // Mock isKeyByPosition to return true for regular keys
+      ;(i18n as any).isKeyByPosition = vi.fn().mockReturnValue(true)
+
+      const position = { line: 0, character: 7 }
+
+      const result = await i18n.getKeyAndRange(mockDocument as any, position)
+
+      expect(result).toBeDefined()
+      expect(result?.key).toBe('user.name')
+    })
+
+    it('should detect human_attribute_name patterns', async () => {
+      const i18n = new I18n('config/locales/*.yml')
+
+      const mockDocument = {
+        getText: vi.fn().mockReturnValue('User.human_attribute_name :name'),
+        positionAt: vi.fn().mockImplementation((offset: number) => {
+          const text = 'User.human_attribute_name :name'
+          const lines = text.substring(0, offset).split('\n')
+          return {
+            line: lines.length - 1,
+            character: lines[lines.length - 1].length,
+          }
+        }),
+        offsetAt: vi.fn().mockImplementation((position: any) => {
+          const text = 'User.human_attribute_name :name'
+          const lines = text.split('\n')
+          let offset = 0
+          for (let i = 0; i < position.line; i++) {
+            offset += lines[i].length + 1
+          }
+          offset += position.character
+          return offset
+        }),
+        lineAt: vi.fn().mockImplementation((lineNumber: number) => ({
+          range: {
+            start: { line: lineNumber, character: 0 },
+            end: { line: lineNumber, character: 100 },
+          },
+          text: 'User.human_attribute_name :name',
+        })),
+        getWordRangeAtPosition: vi.fn().mockReturnValue(null), // No regular match
+      }
+
+      const position = { line: 0, character: 27 } // Position on 'name'
+
+      const result = await i18n.getKeyAndRange(mockDocument as any, position)
+
+      expect(result).toBeDefined()
+      expect(result?.key).toBe('activerecord.attributes.user.name')
+    })
+
+    it('should prioritize human_attribute_name over regular patterns', async () => {
+      const i18n = new I18n('config/locales/*.yml')
+
+      const mockDocument = {
+        getText: vi.fn().mockReturnValue('User.human_attribute_name(:name)'),
+        positionAt: vi.fn().mockImplementation((offset: number) => {
+          const text = 'User.human_attribute_name(:name)'
+          const lines = text.substring(0, offset).split('\n')
+          return {
+            line: lines.length - 1,
+            character: lines[lines.length - 1].length,
+          }
+        }),
+        offsetAt: vi.fn().mockImplementation((position: any) => {
+          const text = 'User.human_attribute_name(:name)'
+          const lines = text.split('\n')
+          let offset = 0
+          for (let i = 0; i < position.line; i++) {
+            offset += lines[i].length + 1
+          }
+          offset += position.character
+          return offset
+        }),
+        lineAt: vi.fn().mockImplementation((lineNumber: number) => ({
+          range: {
+            start: { line: lineNumber, character: 0 },
+            end: { line: lineNumber, character: 100 },
+          },
+          text: 'User.human_attribute_name(:name)',
+        })),
+        getWordRangeAtPosition: vi.fn().mockReturnValue({
+          start: { line: 0, character: 26 },
+          end: { line: 0, character: 30 },
+        }),
+      }
+
+      const position = { line: 0, character: 28 } // Position on 'name'
+
+      const result = await i18n.getKeyAndRange(mockDocument as any, position)
+
+      expect(result).toBeDefined()
+      expect(result?.key).toBe('activerecord.attributes.user.name')
+      // Should use human_attribute_name key, not the regular pattern
+    })
+
+    it('should return undefined when no pattern matches', async () => {
+      const i18n = new I18n('config/locales/*.yml')
+
+      const mockDocument = {
+        getText: vi.fn().mockReturnValue('some_other_code'),
+        positionAt: vi.fn(),
+        offsetAt: vi.fn().mockImplementation((position: any) => {
+          return position.character
+        }),
+        lineAt: vi.fn().mockImplementation((lineNumber: number) => ({
+          range: {
+            start: { line: lineNumber, character: 0 },
+            end: { line: lineNumber, character: 100 },
+          },
+          text: 'some_other_code',
+        })),
+        getWordRangeAtPosition: vi.fn().mockReturnValue(null),
+      }
+
+      const position = { line: 0, character: 5 }
+
+      const result = await i18n.getKeyAndRange(mockDocument as any, position)
+
+      expect(result).toBeUndefined()
     })
   })
 })
