@@ -9,6 +9,7 @@ import {
   type TextDocument,
   type WorkspaceFolder,
 } from 'vscode'
+import { getHumanAttributeNameKeyAtPosition } from './KeyDetector.js'
 import { Parser, type Translation } from './Parser.js'
 import { priorityOfLocales } from './utils.js'
 
@@ -77,12 +78,25 @@ export default class I18n {
     return vscode.workspace.getConfiguration('railsI18n').localizeMethods
   }
 
-  public getKeyByRange(document: TextDocument, range: Range) {
-    const keyAndRange = this.getKeyAndRange(document, range.start)
+  public async getKeyByRange(document: TextDocument, range: Range) {
+    const keyAndRange = await this.getKeyAndRange(document, range.start)
     return keyAndRange ? keyAndRange.key : null
   }
 
-  public getKeyAndRange(document: TextDocument, position: Position) {
+  public async getKeyAndRange(document: TextDocument, position: Position) {
+    // First, check for human_attribute_name patterns at the specific position
+    const humanAttributeKeyInfo = getHumanAttributeNameKeyAtPosition(
+      document,
+      position
+    )
+    if (humanAttributeKeyInfo) {
+      return {
+        range: humanAttributeKeyInfo.range,
+        key: humanAttributeKeyInfo.key,
+      }
+    }
+
+    // Fallback to the original logic for regular i18n keys
     if (!this.isKeyByPosition(document, position)) {
       return
     }

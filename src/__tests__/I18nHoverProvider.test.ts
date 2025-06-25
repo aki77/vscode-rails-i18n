@@ -67,7 +67,7 @@ describe('I18nHoverProvider Multi-Language Support', () => {
   })
 
   describe('provideHover', () => {
-    it('should return hover with multiple language translations', () => {
+    it('should return hover with multiple language translations', async () => {
       const mockResult = {
         key: 'user.name',
         normalizedKey: 'user.name',
@@ -103,14 +103,14 @@ describe('I18nHoverProvider Multi-Language Support', () => {
         ],
       }
 
-      vi.mocked(getMultiLanguageTranslationForPosition).mockReturnValue(
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
         mockResult
       )
 
       const document = createMockDocument()
       const position = { line: 0, character: 0 }
 
-      const result = hoverProvider.provideHover(document, position)
+      const result = await hoverProvider.provideHover(document, position)
 
       expect(result).toBeDefined()
       expect(result.content).toBeDefined()
@@ -133,7 +133,7 @@ describe('I18nHoverProvider Multi-Language Support', () => {
       expect(markdownString.isTrusted).toBe(true)
     })
 
-    it('should return undefined when no translations found', () => {
+    it('should return undefined when no translations found', async () => {
       const mockResult = {
         key: 'user.name',
         normalizedKey: 'user.name',
@@ -149,32 +149,32 @@ describe('I18nHoverProvider Multi-Language Support', () => {
         ],
       }
 
-      vi.mocked(getMultiLanguageTranslationForPosition).mockReturnValue(
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
         mockResult
       )
 
       const document = createMockDocument()
       const position = { line: 0, character: 0 }
 
-      const result = hoverProvider.provideHover(document, position)
+      const result = await hoverProvider.provideHover(document, position)
 
       expect(result).toBeUndefined()
     })
 
-    it('should return undefined when no result from translation helper', () => {
-      vi.mocked(getMultiLanguageTranslationForPosition).mockReturnValue(
+    it('should return undefined when no result from translation helper', async () => {
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
         undefined
       )
 
       const document = createMockDocument()
       const position = { line: 0, character: 0 }
 
-      const result = hoverProvider.provideHover(document, position)
+      const result = await hoverProvider.provideHover(document, position)
 
       expect(result).toBeUndefined()
     })
 
-    it('should return undefined when no key found at position', () => {
+    it('should return undefined when no key found at position', async () => {
       const mockResult = {
         key: 'user.name',
         normalizedKey: 'user.name',
@@ -186,17 +186,75 @@ describe('I18nHoverProvider Multi-Language Support', () => {
         ],
       }
 
-      vi.mocked(getMultiLanguageTranslationForPosition).mockReturnValue(
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
         mockResult
       )
-      mockI18n.getKeyAndRange.mockReturnValue(null) // No key found
+      mockI18n.getKeyAndRange.mockResolvedValue(null) // No key found
 
       const document = createMockDocument()
       const position = { line: 0, character: 0 }
 
-      const result = hoverProvider.provideHover(document, position)
+      const result = await hoverProvider.provideHover(document, position)
 
       expect(result).toBeUndefined()
+    })
+
+    it('should handle human_attribute_name pattern hover', async () => {
+      const mockResult = {
+        key: 'activerecord.attributes.users.name',
+        normalizedKey: 'activerecord.attributes.users.name',
+        localeResults: [
+          {
+            locale: 'en',
+            translation: {
+              locale: 'en',
+              value: 'Full Name',
+              path: '/en.yml',
+              range: {
+                start: { line: 5, character: 8 },
+                end: { line: 5, character: 17 },
+              },
+            },
+          },
+          {
+            locale: 'ja',
+            translation: {
+              locale: 'ja',
+              value: '氏名',
+              path: '/ja.yml',
+              range: {
+                start: { line: 5, character: 8 },
+                end: { line: 5, character: 10 },
+              },
+            },
+          },
+        ],
+      }
+
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
+        mockResult
+      )
+      mockI18n.getKeyAndRange.mockResolvedValue({
+        key: 'activerecord.attributes.users.name',
+        range: {
+          start: { line: 0, character: 25 },
+          end: { line: 0, character: 29 },
+        },
+      })
+
+      const document = createMockDocument()
+      const position = { line: 0, character: 27 } // Position on 'name' in 'User.human_attribute_name :name'
+
+      const result = await hoverProvider.provideHover(document, position)
+
+      expect(result).toBeDefined()
+      expect(result.content).toBeDefined()
+      expect(result.range).toBeDefined()
+
+      const markdownString = result.content
+      expect(markdownString.value).toContain('Full Name')
+      expect(markdownString.value).toContain('氏名')
+      expect(markdownString.isTrusted).toBe(true)
     })
   })
 

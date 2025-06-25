@@ -46,12 +46,12 @@ export function getTranslationForKey(
 /**
  * Retrieves the translation information for the key at the specified position.
  */
-export function getTranslationForPosition(
+export async function getTranslationForPosition(
   i18n: I18n,
   document: TextDocument,
   position: Position
-): TranslationResult | undefined {
-  const keyAndRange = i18n.getKeyAndRange(document, position)
+): Promise<TranslationResult | undefined> {
+  const keyAndRange = await i18n.getKeyAndRange(document, position)
   if (!keyAndRange) {
     return undefined
   }
@@ -91,12 +91,12 @@ export function getMultiLanguageTranslationForKey(
 /**
  * Retrieves the translation information for the key at the specified position across multiple locales.
  */
-export function getMultiLanguageTranslationForPosition(
+export async function getMultiLanguageTranslationForPosition(
   i18n: I18n,
   document: TextDocument,
   position: Position
-): MultiLanguageTranslationResult | undefined {
-  const keyAndRange = i18n.getKeyAndRange(document, position)
+): Promise<MultiLanguageTranslationResult | undefined> {
+  const keyAndRange = await i18n.getKeyAndRange(document, position)
   if (!keyAndRange) {
     return undefined
   }
