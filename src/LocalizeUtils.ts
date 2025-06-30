@@ -22,6 +22,15 @@ export const typeOfMethodName = (
   return value ? value.type : undefined
 }
 
+/**
+ * Represents information about a localization method invocation.
+ *
+ * @property methodName - The name of the localization method (e.g., 't', 'translate').
+ * @property variableName - The variable name used to call the localization method.
+ * @property formatKey - The key or format string used for localization.
+ * @property range - The range in the source code where the localization method is used.
+ * @property type - The type of localization, or undefined if not specified.
+ */
 export type LocalizeMethodInfo = {
   methodName: string
   variableName: string
