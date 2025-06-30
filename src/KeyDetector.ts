@@ -1,6 +1,11 @@
 import * as path from 'node:path'
 import escapeStringRegexp from 'escape-string-regexp'
 import { type Position, Range, type TextDocument, workspace } from 'vscode'
+import {
+  getLocalizeFormatKey,
+  type LocalizeMethodInfo,
+  parseLocalizeMethod,
+} from './LocalizeUtils.js'
 
 // Pattern to match both Model.human_attribute_name :attr and Model.human_attribute_name(:attr)
 const HUMAN_ATTRIBUTE_NAME_PATTERN =
@@ -67,10 +72,12 @@ export function asAbsoluteKey(key: string, document: TextDocument) {
 /**
  * Detects all I18n keys and their locations in the document
  * Processes in chunks to avoid blocking the UI thread for large files
+ * Includes both regular i18n keys and localize method format keys
  */
 export async function getAllI18nKeys(
   document: TextDocument,
-  translateMethods: string[]
+  translateMethods: string[],
+  localizeMethods: string[] = []
 ): Promise<Array<{ key: string; range: Range }>> {
   const text = document.getText()
   const methods = translateMethods.map(escapeStringRegexp)
@@ -84,6 +91,7 @@ export async function getAllI18nKeys(
   let processedCount = 0
   let match: RegExpExecArray | null
 
+  // Process regular i18n keys
   // biome-ignore lint/suspicious/noAssignInExpressions: needed for regex exec loop
   while ((match = regex.exec(text)) !== null) {
     const keyText = match[1]
@@ -100,6 +108,24 @@ export async function getAllI18nKeys(
     // Yield control back to the event loop periodically to avoid blocking
     if (processedCount % CHUNK_SIZE === 0) {
       await new Promise((resolve) => setTimeout(resolve, 0))
+    }
+  }
+
+  // Process localize method keys if localizeMethods is provided
+  if (localizeMethods.length > 0) {
+    const localizeKeys = await getLocalizeKeys(document, localizeMethods)
+
+    for (const localizeKey of localizeKeys) {
+      keys.push({
+        key: localizeKey.key,
+        range: localizeKey.range,
+      })
+
+      processedCount++
+      // Yield control back to the event loop periodically to avoid blocking
+      if (processedCount % CHUNK_SIZE === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0))
+      }
     }
   }
 
@@ -161,4 +187,93 @@ export function getHumanAttributeNameKeyAtPosition(
   }
 
   return createHumanAttributeNameKey(match, matchStart, document)
+}
+
+/**
+ * Detects all localize method calls and their corresponding i18n keys
+ * Processes in chunks to avoid blocking the UI thread for large files
+ */
+export async function getLocalizeKeys(
+  document: TextDocument,
+  localizeMethods: string[]
+): Promise<Array<{ key: string; range: Range; methodInfo: LocalizeMethodInfo }>> {
+  const text = document.getText()
+  const methods = localizeMethods.map(escapeStringRegexp)
+
+  // Pattern to match localize method calls with format parameter
+  const localizePattern = new RegExp(
+    `([${methods.join('|')}])(?:\\s+|\\()\\s*([@\\w.]+)\\s*,\\s*format:\\s*:([\\w]+)`,
+    'g'
+  )
+
+  const keys: Array<{ key: string; range: Range; methodInfo: LocalizeMethodInfo }> = []
+  const CHUNK_SIZE = 100 // Process in chunks to avoid blocking UI
+  let processedCount = 0
+  let match: RegExpExecArray | null
+
+  // biome-ignore lint/suspicious/noAssignInExpressions: needed for regex exec loop
+  while ((match = localizePattern.exec(text)) !== null) {
+    const [, methodName, variableName, formatKey] = match
+    const matchStart = match.index
+
+    // Find the position of the format key in the match
+    const formatStart = text.indexOf(`:${formatKey}`, matchStart)
+    const formatEnd = formatStart + formatKey.length + 1 // +1 for the ':'
+
+    const startPos = document.positionAt(formatStart)
+    const endPos = document.positionAt(formatEnd)
+    const range = new Range(startPos, endPos)
+
+    // Create method info
+    const methodInfo: LocalizeMethodInfo = {
+      methodName,
+      variableName,
+      formatKey,
+      range,
+      type: undefined, // Will be determined by parseLocalizeMethod if needed
+    }
+
+    // Generate possible i18n keys
+    const i18nKeys = getLocalizeFormatKey(formatKey)
+
+    // Add each possible key
+    for (const key of i18nKeys) {
+      keys.push({
+        key,
+        range,
+        methodInfo,
+      })
+    }
+
+    processedCount++
+    // Yield control back to the event loop periodically to avoid blocking
+    if (processedCount % CHUNK_SIZE === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    }
+  }
+
+  return keys
+}
+
+/**
+ * Checks if the given position is within a localize method format parameter and returns the key info
+ * More efficient than scanning the entire document when only checking a specific position
+ */
+export function getLocalizeKeyAtPosition(
+  document: TextDocument,
+  position: Position
+): { keys: string[]; range: Range; methodInfo: LocalizeMethodInfo } | undefined {
+  const methodInfo = parseLocalizeMethod(document, position)
+
+  if (!methodInfo) {
+    return undefined
+  }
+
+  const keys = getLocalizeFormatKey(methodInfo.formatKey, methodInfo.type)
+
+  return {
+    keys,
+    range: methodInfo.range,
+    methodInfo,
+  }
 }
