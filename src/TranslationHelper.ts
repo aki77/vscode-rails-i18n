@@ -169,3 +169,45 @@ export function getLocalizeTranslationForPosition(
     translation: undefined,
   }
 }
+
+/**
+ * Retrieves the translation information for the localize method across multiple locales.
+ */
+export function getMultiLanguageLocalizeTranslationForPosition(
+  i18n: I18n,
+  document: TextDocument,
+  position: Position
+): MultiLanguageTranslationResult | undefined {
+  const localizeKeyInfo = getLocalizeKeyAtPosition(document, position)
+  if (!localizeKeyInfo) {
+    return undefined
+  }
+
+  // Find the best matching key across all possible keys
+  let bestKey: string | undefined
+  for (const key of localizeKeyInfo.keys) {
+    const translation = i18n.get(key)
+    if (translation) {
+      bestKey = key
+      break
+    }
+  }
+
+  // Use the best key or the first possible key
+  const normalizedKey = bestKey || localizeKeyInfo.keys[0]
+
+  const locales = priorityOfLocales()
+  const localeResults: LocaleTranslationResult[] = locales.map((locale) => {
+    const translation = i18n.getByLocale(normalizedKey, locale)
+    return {
+      locale,
+      translation,
+    }
+  })
+
+  return {
+    key: localizeKeyInfo.methodInfo.formatKey, // Keep the original format key for display
+    normalizedKey,
+    localeResults,
+  }
+}

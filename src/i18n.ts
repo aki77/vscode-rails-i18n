@@ -117,8 +117,15 @@ export default class I18n {
     )
   }
 
+  private get i18nHoverRegexp() {
+    return createRegexFromPattern(
+      this.translateMethods(),
+      REGEX_PATTERNS.TRANSLATE_BASIC
+    )
+  }
+
   private isKeyByPosition(document: TextDocument, position: Position) {
-    return !!document.getWordRangeAtPosition(position, this.i18nRegexp)
+    return !!document.getWordRangeAtPosition(position, this.i18nHoverRegexp)
   }
 
   private loadDebounced = debounce(this.load, 500)

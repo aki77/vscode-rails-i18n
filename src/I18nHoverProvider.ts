@@ -8,6 +8,7 @@ import {
 import { MISSING_TRANSLATION_TEXT } from './constants.js'
 import type I18n from './i18n.js'
 import {
+  getMultiLanguageLocalizeTranslationForPosition,
   getMultiLanguageTranslationForPosition,
   type LocaleTranslationResult,
   type MultiLanguageTranslationResult,
@@ -18,32 +19,46 @@ export default class I18nHoverProvider implements HoverProvider {
   constructor(private i18n: I18n) {}
 
   public async provideHover(document: TextDocument, position: Position) {
+    // First, try to get the translation for regular i18n keys
     const result = await getMultiLanguageTranslationForPosition(
       this.i18n,
       document,
       position
     )
-    if (!result) {
-      return
+
+    // Check if we found a regular i18n key with translations
+    if (result) {
+      const hasAnyTranslation = result.localeResults.some(
+        (r) => r.translation !== undefined
+      )
+      if (hasAnyTranslation) {
+        const keyAndRange = await this.i18n.getKeyAndRange(document, position)
+        if (keyAndRange) {
+          // Format multiple language translations
+          const markdownContent = this.formatMultiLanguageTranslations(result)
+          return new Hover(markdownContent, keyAndRange.range)
+        }
+      }
     }
 
-    // Check if any translation exists
-    const hasAnyTranslation = result.localeResults.some(
-      (r) => r.translation !== undefined
+    // If no regular i18n key found or no translations, try localize method
+    const localizeResult = getMultiLanguageLocalizeTranslationForPosition(
+      this.i18n,
+      document,
+      position
     )
-    if (!hasAnyTranslation) {
-      return
+    if (localizeResult) {
+      const hasAnyTranslation = localizeResult.localeResults.some(
+        (r) => r.translation !== undefined
+      )
+      if (hasAnyTranslation) {
+        const markdownContent =
+          this.formatMultiLanguageTranslations(localizeResult)
+        return new Hover(markdownContent)
+      }
     }
 
-    const keyAndRange = await this.i18n.getKeyAndRange(document, position)
-    if (!keyAndRange) {
-      return
-    }
-
-    // Format multiple language translations
-    const markdownContent = this.formatMultiLanguageTranslations(result)
-
-    return new Hover(markdownContent, keyAndRange.range)
+    return
   }
 
   private formatMultiLanguageTranslations(

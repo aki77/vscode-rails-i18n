@@ -36,6 +36,7 @@ let getMultiLanguageTranslationForKey: any
 let getMultiLanguageTranslationForPosition: any
 let getLocalizeTranslationForKey: any
 let getLocalizeTranslationForPosition: any
+let getMultiLanguageLocalizeTranslationForPosition: any
 
 beforeAll(async () => {
   const module = await import('../TranslationHelper.js')
@@ -44,6 +45,8 @@ beforeAll(async () => {
     module.getMultiLanguageTranslationForPosition
   getLocalizeTranslationForKey = module.getLocalizeTranslationForKey
   getLocalizeTranslationForPosition = module.getLocalizeTranslationForPosition
+  getMultiLanguageLocalizeTranslationForPosition =
+    module.getMultiLanguageLocalizeTranslationForPosition
 })
 
 // Mock for I18n
@@ -248,7 +251,11 @@ describe('TranslationHelper Multi-Language Support', () => {
     it('should return translation for date format key', () => {
       const translations = {
         en: {
-          'date.formats.short': { locale: 'en', value: '%m/%d/%Y', path: '/en.yml' },
+          'date.formats.short': {
+            locale: 'en',
+            value: '%m/%d/%Y',
+            path: '/en.yml',
+          },
         },
       }
 
@@ -266,7 +273,11 @@ describe('TranslationHelper Multi-Language Support', () => {
     it('should return translation for time format key', () => {
       const translations = {
         en: {
-          'time.formats.default': { locale: 'en', value: '%a, %d %b %Y %H:%M:%S %z', path: '/en.yml' },
+          'time.formats.default': {
+            locale: 'en',
+            value: '%a, %d %b %Y %H:%M:%S %z',
+            path: '/en.yml',
+          },
         },
       }
 
@@ -284,7 +295,11 @@ describe('TranslationHelper Multi-Language Support', () => {
     it('should try both date and time when type is not specified', () => {
       const translations = {
         en: {
-          'time.formats.short': { locale: 'en', value: '%d %b %H:%M', path: '/en.yml' },
+          'time.formats.short': {
+            locale: 'en',
+            value: '%d %b %H:%M',
+            path: '/en.yml',
+          },
           // No date.formats.short
         },
       }
@@ -307,7 +322,11 @@ describe('TranslationHelper Multi-Language Support', () => {
 
       const mockI18n = createMockI18n(translations)
 
-      const result = getLocalizeTranslationForKey(mockI18n, 'nonexistent', 'date')
+      const result = getLocalizeTranslationForKey(
+        mockI18n,
+        'nonexistent',
+        'date'
+      )
 
       expect(result).toBeDefined()
       expect(result.key).toBe('nonexistent')
@@ -320,7 +339,11 @@ describe('TranslationHelper Multi-Language Support', () => {
     it('should return translation for localize method at position', () => {
       const translations = {
         en: {
-          'date.formats.short': { locale: 'en', value: '%m/%d/%Y', path: '/en.yml' },
+          'date.formats.short': {
+            locale: 'en',
+            value: '%m/%d/%Y',
+            path: '/en.yml',
+          },
         },
       }
 
@@ -339,11 +362,10 @@ describe('TranslationHelper Multi-Language Support', () => {
         },
       })
 
-      const result = getLocalizeTranslationForPosition(
-        mockI18n,
-        mockDocument,
-        { line: 0, character: 0 }
-      )
+      const result = getLocalizeTranslationForPosition(mockI18n, mockDocument, {
+        line: 0,
+        character: 0,
+      })
 
       expect(result).toBeDefined()
       expect(result.key).toBe('short') // Original format key
@@ -355,7 +377,11 @@ describe('TranslationHelper Multi-Language Support', () => {
     it('should return undefined when no localize method at position', () => {
       const translations = {
         en: {
-          'date.formats.short': { locale: 'en', value: '%m/%d/%Y', path: '/en.yml' },
+          'date.formats.short': {
+            locale: 'en',
+            value: '%m/%d/%Y',
+            path: '/en.yml',
+          },
         },
       }
 
@@ -365,11 +391,10 @@ describe('TranslationHelper Multi-Language Support', () => {
       // Mock getLocalizeKeyAtPosition to return null
       mockGetLocalizeKeyAtPosition.mockReturnValue(undefined)
 
-      const result = getLocalizeTranslationForPosition(
-        mockI18n,
-        mockDocument,
-        { line: 0, character: 0 }
-      )
+      const result = getLocalizeTranslationForPosition(mockI18n, mockDocument, {
+        line: 0,
+        character: 0,
+      })
 
       expect(result).toBeUndefined()
     })
@@ -377,7 +402,11 @@ describe('TranslationHelper Multi-Language Support', () => {
     it('should handle multiple possible keys and return first match', () => {
       const translations = {
         en: {
-          'time.formats.short': { locale: 'en', value: '%d %b %H:%M', path: '/en.yml' },
+          'time.formats.short': {
+            locale: 'en',
+            value: '%d %b %H:%M',
+            path: '/en.yml',
+          },
           // No date.formats.short
         },
       }
@@ -397,17 +426,163 @@ describe('TranslationHelper Multi-Language Support', () => {
         },
       })
 
-      const result = getLocalizeTranslationForPosition(
-        mockI18n,
-        mockDocument,
-        { line: 0, character: 0 }
-      )
+      const result = getLocalizeTranslationForPosition(mockI18n, mockDocument, {
+        line: 0,
+        character: 0,
+      })
 
       expect(result).toBeDefined()
       expect(result.key).toBe('short')
       expect(result.normalizedKey).toBe('time.formats.short') // Should find time format (second key)
       expect(result.translation).toBeDefined()
       expect(result.translation.value).toBe('%d %b %H:%M')
+    })
+  })
+
+  describe('getMultiLanguageLocalizeTranslationForPosition', () => {
+    it('should return multi-language translations for localize method', () => {
+      const translations = {
+        en: {
+          'date.formats.short': {
+            locale: 'en',
+            value: '%m/%d/%Y',
+            path: '/en.yml',
+          },
+        },
+        ja: {
+          'date.formats.short': {
+            locale: 'ja',
+            value: '%Y/%m/%d',
+            path: '/ja.yml',
+          },
+        },
+      }
+
+      const mockI18n = createMockI18n(translations)
+      const mockDocument = createMockDocument()
+
+      mockGetLocalizeKeyAtPosition.mockReturnValue({
+        keys: ['date.formats.short'],
+        range: {
+          start: { line: 0, character: 0 },
+          end: { line: 0, character: 5 },
+        },
+        methodInfo: {
+          formatKey: 'short',
+          methodName: 'l',
+          variableName: 'date_var',
+          type: 'date',
+        },
+      })
+
+      const result = getMultiLanguageLocalizeTranslationForPosition(
+        mockI18n,
+        mockDocument,
+        {
+          line: 0,
+          character: 0,
+        }
+      )
+
+      expect(result).toBeDefined()
+      expect(result.key).toBe('short')
+      expect(result.normalizedKey).toBe('date.formats.short')
+      expect(result.localeResults).toHaveLength(3) // en, ja, fr
+
+      const enResult = result.localeResults.find((r: any) => r.locale === 'en')
+      expect(enResult.translation).toBeDefined()
+      expect(enResult.translation.value).toBe('%m/%d/%Y')
+
+      const jaResult = result.localeResults.find((r: any) => r.locale === 'ja')
+      expect(jaResult.translation).toBeDefined()
+      expect(jaResult.translation.value).toBe('%Y/%m/%d')
+
+      const frResult = result.localeResults.find((r: any) => r.locale === 'fr')
+      expect(frResult.translation).toBeUndefined() // No French translation
+    })
+
+    it('should return undefined when no localize key found', () => {
+      const translations = {
+        en: {
+          'date.formats.short': {
+            locale: 'en',
+            value: '%m/%d/%Y',
+            path: '/en.yml',
+          },
+        },
+      }
+
+      const mockI18n = createMockI18n(translations)
+      const mockDocument = createMockDocument()
+
+      mockGetLocalizeKeyAtPosition.mockReturnValue(undefined)
+
+      const result = getMultiLanguageLocalizeTranslationForPosition(
+        mockI18n,
+        mockDocument,
+        {
+          line: 0,
+          character: 0,
+        }
+      )
+
+      expect(result).toBeUndefined()
+    })
+
+    it('should handle missing translations in some locales', () => {
+      const translations = {
+        en: {
+          'date.formats.short': {
+            locale: 'en',
+            value: '%m/%d/%Y',
+            path: '/en.yml',
+          },
+        },
+        ja: {
+          // No date.formats.short in Japanese
+        },
+      }
+
+      const mockI18n = createMockI18n(translations)
+      const mockDocument = createMockDocument()
+
+      mockGetLocalizeKeyAtPosition.mockReturnValue({
+        keys: ['date.formats.short'],
+        range: {
+          start: { line: 0, character: 0 },
+          end: { line: 0, character: 5 },
+        },
+        methodInfo: {
+          formatKey: 'short',
+          methodName: 'l',
+          variableName: 'date_var',
+          type: 'date',
+        },
+      })
+
+      const result = getMultiLanguageLocalizeTranslationForPosition(
+        mockI18n,
+        mockDocument,
+        {
+          line: 0,
+          character: 0,
+        }
+      )
+
+      expect(result).toBeDefined()
+      expect(result.key).toBe('short')
+      expect(result.normalizedKey).toBe('date.formats.short')
+      expect(result.localeResults).toHaveLength(3) // en, ja, fr
+
+      const enResult = result.localeResults.find((r: any) => r.locale === 'en')
+      expect(enResult.translation).toBeDefined()
+      expect(enResult.translation.value).toBe('%m/%d/%Y')
+
+      const jaResult = result.localeResults.find((r: any) => r.locale === 'ja')
+      expect(jaResult.translation).toBeUndefined()
+
+      const frResult = result.localeResults.find((r: any) => r.locale === 'fr')
+      expect(frResult.translation).toBeUndefined()
     })
   })
 })
