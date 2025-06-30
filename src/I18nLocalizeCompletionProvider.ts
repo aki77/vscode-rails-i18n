@@ -8,26 +8,7 @@ import {
   type TextDocument,
 } from 'vscode'
 import type I18n from './i18n.js'
-
-type LocalizeType = 'date' | 'time'
-
-const METHOD_NAME_SUFFIXES = [
-  {
-    type: 'date' as const,
-    suffixes: ['_on', 'date', 'day', 'tomorrow'],
-  },
-  {
-    type: 'time' as const,
-    suffixes: ['_at', 'time', 'now', '.in_time_zone'],
-  },
-]
-
-const typeOfMethodName = (methodName: string): LocalizeType | undefined => {
-  const value = METHOD_NAME_SUFFIXES.find(({ suffixes }) =>
-    suffixes.some((suffix) => methodName.endsWith(suffix))
-  )
-  return value ? value.type : undefined
-}
+import { type LocalizeType, typeOfMethodName } from './LocalizeUtils.js'
 
 export default class I18nLocalizeCompletionProvider
   implements CompletionItemProvider
