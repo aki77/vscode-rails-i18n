@@ -1,10 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
 
 // Mock for VSCode API
-const Position = vi.fn().mockImplementation((line: number, character: number) => ({
-  line,
-  character,
-}))
+const Position = vi
+  .fn()
+  .mockImplementation((line: number, character: number) => ({
+    line,
+    character,
+  }))
 
 const Range = vi.fn().mockImplementation((start: any, end: any) => ({
   start,
@@ -18,8 +20,6 @@ vi.mock('vscode', () => ({
 
 import {
   getLocalizeFormatKey,
-  type LocalizeMethodInfo,
-  type LocalizeType,
   METHOD_NAME_SUFFIXES,
   parseLocalizeMethod,
   typeOfMethodName,

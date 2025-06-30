@@ -1,11 +1,11 @@
 import * as path from 'node:path'
-import escapeStringRegexp from 'escape-string-regexp'
 import { type Position, Range, type TextDocument, workspace } from 'vscode'
 import {
   getLocalizeFormatKey,
   type LocalizeMethodInfo,
   parseLocalizeMethod,
 } from './LocalizeUtils.js'
+import { createRegexFromPattern, REGEX_PATTERNS } from './RegexUtils.js'
 
 // Pattern to match both Model.human_attribute_name :attr and Model.human_attribute_name(:attr)
 const HUMAN_ATTRIBUTE_NAME_PATTERN =
@@ -80,9 +80,9 @@ export async function getAllI18nKeys(
   localizeMethods: string[] = []
 ): Promise<Array<{ key: string; range: Range }>> {
   const text = document.getText()
-  const methods = translateMethods.map(escapeStringRegexp)
-  const regex = new RegExp(
-    `(?:[^a-z.']|^)(?:${methods.join('|')})['"\\s(]+([a-zA-Z0-9_.]+)`,
+  const regex = createRegexFromPattern(
+    translateMethods,
+    REGEX_PATTERNS.TRANSLATE_BASIC,
     'g'
   )
 
@@ -196,17 +196,23 @@ export function getHumanAttributeNameKeyAtPosition(
 export async function getLocalizeKeys(
   document: TextDocument,
   localizeMethods: string[]
-): Promise<Array<{ key: string; range: Range; methodInfo: LocalizeMethodInfo }>> {
+): Promise<
+  Array<{ key: string; range: Range; methodInfo: LocalizeMethodInfo }>
+> {
   const text = document.getText()
-  const methods = localizeMethods.map(escapeStringRegexp)
 
   // Pattern to match localize method calls with format parameter
-  const localizePattern = new RegExp(
-    `([${methods.join('|')}])(?:\\s+|\\()\\s*([@\\w.]+)\\s*,\\s*format:\\s*:([\\w]+)`,
+  const localizePattern = createRegexFromPattern(
+    localizeMethods,
+    REGEX_PATTERNS.LOCALIZE_METHOD,
     'g'
   )
 
-  const keys: Array<{ key: string; range: Range; methodInfo: LocalizeMethodInfo }> = []
+  const keys: Array<{
+    key: string
+    range: Range
+    methodInfo: LocalizeMethodInfo
+  }> = []
   const CHUNK_SIZE = 100 // Process in chunks to avoid blocking UI
   let processedCount = 0
   let match: RegExpExecArray | null
@@ -262,7 +268,9 @@ export async function getLocalizeKeys(
 export function getLocalizeKeyAtPosition(
   document: TextDocument,
   position: Position
-): { keys: string[]; range: Range; methodInfo: LocalizeMethodInfo } | undefined {
+):
+  | { keys: string[]; range: Range; methodInfo: LocalizeMethodInfo }
+  | undefined {
   const methodInfo = parseLocalizeMethod(document, position)
 
   if (!methodInfo) {

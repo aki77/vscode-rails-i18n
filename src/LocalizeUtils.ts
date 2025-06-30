@@ -13,7 +13,9 @@ export const METHOD_NAME_SUFFIXES = [
   },
 ]
 
-export const typeOfMethodName = (methodName: string): LocalizeType | undefined => {
+export const typeOfMethodName = (
+  methodName: string
+): LocalizeType | undefined => {
   const value = METHOD_NAME_SUFFIXES.find(({ suffixes }) =>
     suffixes.some((suffix) => methodName.endsWith(suffix))
   )
@@ -29,14 +31,17 @@ export type LocalizeMethodInfo = {
 }
 
 export function parseLocalizeMethod(
-  document: Pick<TextDocument, 'getText'> & { lineAt: (line: number) => { text: string } },
+  document: Pick<TextDocument, 'getText'> & {
+    lineAt: (line: number) => { text: string }
+  },
   position: Position
 ): LocalizeMethodInfo | undefined {
   const line = document.lineAt(position.line).text
 
   // More comprehensive localize method pattern: method(variable, format: :key)
   // Supports both spaced and parentheses syntax: l var, format: :key or l(var, format: :key)
-  const localizePattern = /([a-z_]+)(?:\s+|\()\s*([@\w.]+)\s*,\s*format:\s*:(\w+)/g
+  const localizePattern =
+    /([a-z_]+)(?:\s+|\()\s*([@\w.]+)\s*,\s*format:\s*:(\w+)/g
 
   // Find all matches and check which one contains the cursor position
   const matches = [...line.matchAll(localizePattern)]

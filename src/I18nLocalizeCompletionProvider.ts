@@ -1,4 +1,3 @@
-import escapeStringRegexp from 'escape-string-regexp'
 import {
   CompletionItem,
   CompletionItemKind,
@@ -9,6 +8,7 @@ import {
 } from 'vscode'
 import type I18n from './i18n.js'
 import { type LocalizeType, typeOfMethodName } from './LocalizeUtils.js'
+import { createRegexFromPattern, REGEX_PATTERNS } from './RegexUtils.js'
 
 export default class I18nLocalizeCompletionProvider
   implements CompletionItemProvider
@@ -16,11 +16,9 @@ export default class I18nLocalizeCompletionProvider
   constructor(private i18n: I18n) {}
 
   public provideCompletionItems(document: TextDocument, position: Position) {
-    const methods = this.i18n.localizeMethods().map(escapeStringRegexp)
-    const lineRegexp = new RegExp(
-      `[^a-z.](?:${methods.join(
-        '|'
-      )})(?:\\s+|\\()([@\\w.]+),\\s*format: :[a-zA-Z0-9_]*$`
+    const lineRegexp = createRegexFromPattern(
+      this.i18n.localizeMethods(),
+      REGEX_PATTERNS.LOCALIZE_COMPLETION
     )
     const line = document.getText(
       new Range(

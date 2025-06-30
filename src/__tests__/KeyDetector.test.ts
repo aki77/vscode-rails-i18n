@@ -337,7 +337,11 @@ describe('getAllI18nKeys with localize methods', () => {
     `
     const document = createMockDocument(text)
 
-    const result = await getAllI18nKeys(document, translateMethods, localizeMethods)
+    const result = await getAllI18nKeys(
+      document,
+      translateMethods,
+      localizeMethods
+    )
 
     expect(result).toHaveLength(6) // 2 regular + 4 localize keys (2 for each format)
     expect(result.map((r: any) => r.key)).toContain('user.name')
