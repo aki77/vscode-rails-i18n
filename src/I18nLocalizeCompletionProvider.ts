@@ -1,4 +1,3 @@
-import escapeStringRegexp from 'escape-string-regexp'
 import {
   CompletionItem,
   CompletionItemKind,
@@ -8,26 +7,8 @@ import {
   type TextDocument,
 } from 'vscode'
 import type I18n from './i18n.js'
-
-type LocalizeType = 'date' | 'time'
-
-const METHOD_NAME_SUFFIXES = [
-  {
-    type: 'date' as const,
-    suffixes: ['_on', 'date', 'day', 'tomorrow'],
-  },
-  {
-    type: 'time' as const,
-    suffixes: ['_at', 'time', 'now', '.in_time_zone'],
-  },
-]
-
-const typeOfMethodName = (methodName: string): LocalizeType | undefined => {
-  const value = METHOD_NAME_SUFFIXES.find(({ suffixes }) =>
-    suffixes.some((suffix) => methodName.endsWith(suffix))
-  )
-  return value ? value.type : undefined
-}
+import { type LocalizeType, typeOfMethodName } from './LocalizeUtils.js'
+import { createRegexFromPattern, REGEX_PATTERNS } from './RegexUtils.js'
 
 export default class I18nLocalizeCompletionProvider
   implements CompletionItemProvider
@@ -35,11 +16,9 @@ export default class I18nLocalizeCompletionProvider
   constructor(private i18n: I18n) {}
 
   public provideCompletionItems(document: TextDocument, position: Position) {
-    const methods = this.i18n.localizeMethods().map(escapeStringRegexp)
-    const lineRegexp = new RegExp(
-      `[^a-z.](?:${methods.join(
-        '|'
-      )})(?:\\s+|\\()([@\\w.]+),\\s*format: :[a-zA-Z0-9_]*$`
+    const lineRegexp = createRegexFromPattern(
+      this.i18n.localizeMethods(),
+      REGEX_PATTERNS.LOCALIZE_COMPLETION
     )
     const line = document.getText(
       new Range(

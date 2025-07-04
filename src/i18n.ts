@@ -1,5 +1,4 @@
 import debounce from 'debounce'
-import escapeStringRegexp from 'escape-string-regexp'
 import * as vscode from 'vscode'
 import {
   type FileSystemWatcher,
@@ -11,6 +10,7 @@ import {
 } from 'vscode'
 import { getHumanAttributeNameKeyAtPosition } from './KeyDetector.js'
 import { Parser, type Translation } from './Parser.js'
+import { createRegexFromPattern, REGEX_PATTERNS } from './RegexUtils.js'
 import { priorityOfLocales } from './utils.js'
 
 const KEY_REGEXP = /[a-zA-Z0-9_.]+/
@@ -111,15 +111,21 @@ export default class I18n {
   }
 
   private get i18nRegexp() {
-    const methods = this.translateMethods().map(escapeStringRegexp)
-    const i18nRegexp = new RegExp(
-      `[^a-z.](?:${methods.join('|')})['"\\s(]+([a-zA-Z0-9_.]*)`
+    return createRegexFromPattern(
+      this.translateMethods(),
+      REGEX_PATTERNS.TRANSLATE_COMPLETION
     )
-    return i18nRegexp
+  }
+
+  private get i18nHoverRegexp() {
+    return createRegexFromPattern(
+      this.translateMethods(),
+      REGEX_PATTERNS.TRANSLATE_BASIC
+    )
   }
 
   private isKeyByPosition(document: TextDocument, position: Position) {
-    return !!document.getWordRangeAtPosition(position, this.i18nRegexp)
+    return !!document.getWordRangeAtPosition(position, this.i18nHoverRegexp)
   }
 
   private loadDebounced = debounce(this.load, 500)

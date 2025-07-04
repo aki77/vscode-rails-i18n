@@ -1,4 +1,3 @@
-import escapeStringRegexp from 'escape-string-regexp'
 import {
   CompletionItem,
   CompletionItemKind,
@@ -8,6 +7,7 @@ import {
   type TextDocument,
 } from 'vscode'
 import type I18n from './i18n.js'
+import { createRegexFromPattern, REGEX_PATTERNS } from './RegexUtils.js'
 
 export default class I18nTranslateCompletionProvider
   implements CompletionItemProvider
@@ -15,9 +15,9 @@ export default class I18nTranslateCompletionProvider
   constructor(private i18n: I18n) {}
 
   public provideCompletionItems(document: TextDocument, position: Position) {
-    const methods = this.i18n.translateMethods().map(escapeStringRegexp)
-    const lineRegexp = new RegExp(
-      `[^a-z.](?:${methods.join('|')})['"\\s(]+([a-zA-Z0-9_.]*)$`
+    const lineRegexp = createRegexFromPattern(
+      this.i18n.translateMethods(),
+      REGEX_PATTERNS.TRANSLATE_COMPLETION
     )
     const line = document.getText(
       new Range(

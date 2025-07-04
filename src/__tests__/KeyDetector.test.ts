@@ -14,12 +14,16 @@ vi.mock('vscode', () => ({
 let getAllI18nKeys: any
 let getHumanAttributeNameKeys: any
 let getHumanAttributeNameKeyAtPosition: any
+let getLocalizeKeys: any
+let getLocalizeKeyAtPosition: any
 
 beforeAll(async () => {
   const module = await import('../KeyDetector.js')
   getAllI18nKeys = module.getAllI18nKeys
   getHumanAttributeNameKeys = module.getHumanAttributeNameKeys
   getHumanAttributeNameKeyAtPosition = module.getHumanAttributeNameKeyAtPosition
+  getLocalizeKeys = module.getLocalizeKeys
+  getLocalizeKeyAtPosition = module.getLocalizeKeyAtPosition
 })
 
 // Mock for TextDocument
@@ -317,5 +321,153 @@ describe('getHumanAttributeNameKeyAtPosition', () => {
 
     expect(result).toBeDefined()
     expect(result?.key).toBe('activerecord.attributes.product.description')
+  })
+})
+
+describe('getAllI18nKeys with localize methods', () => {
+  const translateMethods = ['t', 'I18n.t']
+  const localizeMethods = ['l', 'localize']
+
+  it('detects both regular i18n keys and localize format keys', async () => {
+    const text = `
+      t("user.name")
+      l(Time.current, format: :short)
+      I18n.t("user.email")
+      localize(@user.created_at, format: :long)
+    `
+    const document = createMockDocument(text)
+
+    const result = await getAllI18nKeys(
+      document,
+      translateMethods,
+      localizeMethods
+    )
+
+    expect(result).toHaveLength(6) // 2 regular + 4 localize keys (2 for each format)
+    expect(result.map((r: any) => r.key)).toContain('user.name')
+    expect(result.map((r: any) => r.key)).toContain('user.email')
+    expect(result.map((r: any) => r.key)).toContain('date.formats.short')
+    expect(result.map((r: any) => r.key)).toContain('time.formats.short')
+    expect(result.map((r: any) => r.key)).toContain('date.formats.long')
+    expect(result.map((r: any) => r.key)).toContain('time.formats.long')
+  })
+
+  it('works without localize methods when empty array provided', async () => {
+    const text = `
+      t("user.name")
+      l(Time.current, format: :short)
+    `
+    const document = createMockDocument(text)
+
+    const result = await getAllI18nKeys(document, translateMethods, [])
+
+    expect(result).toHaveLength(1)
+    expect(result[0].key).toBe('user.name')
+  })
+})
+
+describe('getLocalizeKeys', () => {
+  const localizeMethods = ['l', 'localize']
+
+  it('detects localize method with format parameter', async () => {
+    const text = 'l(Time.current, format: :short)'
+    const document = createMockDocument(text)
+
+    const result = await getLocalizeKeys(document, localizeMethods)
+
+    expect(result).toHaveLength(2) // Both date and time formats
+    expect(result.map((r: any) => r.key)).toContain('date.formats.short')
+    expect(result.map((r: any) => r.key)).toContain('time.formats.short')
+  })
+
+  it('detects multiple localize methods', async () => {
+    const text = `
+      l(Time.current, format: :short)
+      localize(@user.created_at, format: :long)
+      l(Date.today, format: :default)
+    `
+    const document = createMockDocument(text)
+
+    const result = await getLocalizeKeys(document, localizeMethods)
+
+    expect(result).toHaveLength(6) // 2 keys for each of the 3 formats
+    expect(result.map((r: any) => r.key)).toContain('date.formats.short')
+    expect(result.map((r: any) => r.key)).toContain('time.formats.short')
+    expect(result.map((r: any) => r.key)).toContain('date.formats.long')
+    expect(result.map((r: any) => r.key)).toContain('time.formats.long')
+    expect(result.map((r: any) => r.key)).toContain('date.formats.default')
+    expect(result.map((r: any) => r.key)).toContain('time.formats.default')
+  })
+
+  it('handles spaced syntax', async () => {
+    const text = 'l Time.current, format: :short'
+    const document = createMockDocument(text)
+
+    const result = await getLocalizeKeys(document, localizeMethods)
+
+    expect(result).toHaveLength(2)
+    expect(result.map((r: any) => r.key)).toContain('date.formats.short')
+    expect(result.map((r: any) => r.key)).toContain('time.formats.short')
+  })
+
+  it('returns empty array when no localize methods found', async () => {
+    const text = 'some_other_method(variable, format: :test)'
+    const document = createMockDocument(text)
+
+    const result = await getLocalizeKeys(document, localizeMethods)
+
+    expect(result).toHaveLength(0)
+  })
+})
+
+describe('getLocalizeKeyAtPosition', () => {
+  it('detects localize format key at position', () => {
+    const text = 'l(Time.current, format: :short)'
+    const document = createMockDocument(text)
+    const position = { line: 0, character: 26 } // Position on ':short'
+
+    const result = getLocalizeKeyAtPosition(document, position)
+
+    expect(result).toBeDefined()
+    expect(result?.keys).toContain('date.formats.short')
+    expect(result?.keys).toContain('time.formats.short')
+    expect(result?.methodInfo.formatKey).toBe('short')
+    expect(result?.methodInfo.methodName).toBe('l')
+    expect(result?.methodInfo.variableName).toBe('Time.current')
+  })
+
+  it('detects localize format key with spaced syntax', () => {
+    const text = 'localize Time.current, format: :long'
+    const document = createMockDocument(text)
+    const position = { line: 0, character: 32 } // Position on ':long'
+
+    const result = getLocalizeKeyAtPosition(document, position)
+
+    expect(result).toBeDefined()
+    expect(result?.keys).toContain('date.formats.long')
+    expect(result?.keys).toContain('time.formats.long')
+    expect(result?.methodInfo.formatKey).toBe('long')
+    expect(result?.methodInfo.methodName).toBe('localize')
+    expect(result?.methodInfo.variableName).toBe('Time.current')
+  })
+
+  it('returns undefined when position is not within format parameter', () => {
+    const text = 'l(Time.current, format: :short)'
+    const document = createMockDocument(text)
+    const position = { line: 0, character: 5 } // Position on 'Time'
+
+    const result = getLocalizeKeyAtPosition(document, position)
+
+    expect(result).toBeUndefined()
+  })
+
+  it('returns undefined when no localize method at position', () => {
+    const text = 'some_other_method(variable, format: :test)'
+    const document = createMockDocument(text)
+    const position = { line: 0, character: 35 } // Position on ':test'
+
+    const result = getLocalizeKeyAtPosition(document, position)
+
+    expect(result).toBeUndefined()
   })
 })

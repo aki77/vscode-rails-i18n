@@ -23,10 +23,13 @@ vi.mock('vscode', () => ({
 // Mock for TranslationHelper
 vi.mock('../TranslationHelper.js', () => ({
   getMultiLanguageTranslationForPosition: vi.fn(),
+  getLocalizeTranslationForPosition: vi.fn(),
+  getMultiLanguageLocalizeTranslationForPosition: vi.fn(),
 }))
 
 let I18nHoverProvider: any
 let getMultiLanguageTranslationForPosition: any
+let getMultiLanguageLocalizeTranslationForPosition: any
 
 beforeAll(async () => {
   const hoverModule = await import('../I18nHoverProvider.js')
@@ -34,6 +37,8 @@ beforeAll(async () => {
   I18nHoverProvider = hoverModule.default
   getMultiLanguageTranslationForPosition =
     helperModule.getMultiLanguageTranslationForPosition
+  getMultiLanguageLocalizeTranslationForPosition =
+    helperModule.getMultiLanguageLocalizeTranslationForPosition
 })
 
 // Mock for I18n
@@ -197,6 +202,166 @@ describe('I18nHoverProvider Multi-Language Support', () => {
       const result = await hoverProvider.provideHover(document, position)
 
       expect(result).toBeUndefined()
+    })
+
+    it('should return hover for localize method when no regular i18n key found', async () => {
+      // Mock getMultiLanguageTranslationForPosition to return undefined (no regular i18n key)
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
+        undefined
+      )
+
+      // Mock getMultiLanguageLocalizeTranslationForPosition to return localize translation
+      const mockLocalizeResult = {
+        key: 'short',
+        normalizedKey: 'date.formats.short',
+        localeResults: [
+          {
+            locale: 'en',
+            translation: {
+              locale: 'en',
+              value: '%b %d',
+              path: '/en.yml',
+              range: {
+                start: { line: 10, character: 8 },
+                end: { line: 10, character: 13 },
+              },
+            },
+          },
+          {
+            locale: 'ja',
+            translation: {
+              locale: 'ja',
+              value: '%m月%d日',
+              path: '/ja.yml',
+              range: {
+                start: { line: 10, character: 8 },
+                end: { line: 10, character: 15 },
+              },
+            },
+          },
+        ],
+      }
+
+      vi.mocked(getMultiLanguageLocalizeTranslationForPosition).mockReturnValue(
+        mockLocalizeResult
+      )
+
+      const document = createMockDocument()
+      const position = { line: 0, character: 20 } // Position on format key in localize method
+
+      const result = await hoverProvider.provideHover(document, position)
+
+      expect(result).toBeDefined()
+      expect(result.content).toBeDefined()
+
+      // Check that the markdown content shows the localize format translation for multiple locales
+      const markdownString = result.content
+      expect(markdownString.value).toContain('en')
+      expect(markdownString.value).toContain('%b %d')
+      expect(markdownString.value).toContain('ja')
+      expect(markdownString.value).toContain('%m月%d日')
+      expect(markdownString.value).toContain('$(go-to-file)')
+      expect(markdownString.isTrusted).toBe(true)
+    })
+
+    it('should return undefined for localize method when no translation found', async () => {
+      // Mock getMultiLanguageTranslationForPosition to return undefined (no regular i18n key)
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
+        undefined
+      )
+
+      // Mock getMultiLanguageLocalizeTranslationForPosition to return result without translations
+      const mockLocalizeResult = {
+        key: 'unknown',
+        normalizedKey: 'date.formats.unknown',
+        localeResults: [
+          {
+            locale: 'en',
+            translation: undefined,
+          },
+          {
+            locale: 'ja',
+            translation: undefined,
+          },
+        ],
+      }
+
+      vi.mocked(getMultiLanguageLocalizeTranslationForPosition).mockReturnValue(
+        mockLocalizeResult
+      )
+
+      const document = createMockDocument()
+      const position = { line: 0, character: 20 }
+
+      const result = await hoverProvider.provideHover(document, position)
+
+      expect(result).toBeUndefined()
+    })
+
+    it('should prioritize regular i18n keys over localize method', async () => {
+      // Mock getMultiLanguageTranslationForPosition to return regular i18n result
+      const mockI18nResult = {
+        key: 'user.name',
+        normalizedKey: 'user.name',
+        localeResults: [
+          {
+            locale: 'en',
+            translation: {
+              locale: 'en',
+              value: 'Name',
+              path: '/en.yml',
+              range: {
+                start: { line: 0, character: 0 },
+                end: { line: 0, character: 4 },
+              },
+            },
+          },
+        ],
+      }
+
+      vi.mocked(getMultiLanguageTranslationForPosition).mockResolvedValue(
+        mockI18nResult
+      )
+
+      // Mock getMultiLanguageLocalizeTranslationForPosition (should not be called)
+      const mockLocalizeResult = {
+        key: 'short',
+        normalizedKey: 'date.formats.short',
+        localeResults: [
+          {
+            locale: 'en',
+            translation: {
+              locale: 'en',
+              value: '%b %d',
+              path: '/en.yml',
+              range: {
+                start: { line: 10, character: 8 },
+                end: { line: 10, character: 13 },
+              },
+            },
+          },
+        ],
+      }
+
+      vi.mocked(getMultiLanguageLocalizeTranslationForPosition).mockReturnValue(
+        mockLocalizeResult
+      )
+
+      const document = createMockDocument()
+      const position = { line: 0, character: 0 }
+
+      const result = await hoverProvider.provideHover(document, position)
+
+      expect(result).toBeDefined()
+      expect(result.content).toBeDefined()
+
+      // Should show regular i18n translation, not localize translation
+      const markdownString = result.content
+      expect(markdownString.value).toContain('Name')
+      expect(markdownString.value).not.toContain('%b %d')
+      expect(
+        getMultiLanguageLocalizeTranslationForPosition
+      ).not.toHaveBeenCalled()
     })
 
     it('should handle human_attribute_name pattern hover', async () => {
