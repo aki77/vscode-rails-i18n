@@ -67,7 +67,7 @@
         },
         "railsI18n.localeFilePattern": {
           "type": "string",
-          "default": "config/locales/*.yml",
+          "default": "config/locales/**/*.yml",
           "description": "I18n locale file glob pattern"
         },
         "railsI18n.priorityOfLocales": {

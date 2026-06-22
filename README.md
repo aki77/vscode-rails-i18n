@@ -46,7 +46,7 @@ Configure the extension through VS Code settings:
 |---------|-------------|---------|
 | `railsI18n.translateMethods` | I18n translate methods | `["I18n.translate", "I18n.t", "t"]` |
 | `railsI18n.localizeMethods` | I18n localize methods | `["I18n.localize", "I18n.l", "l"]` |
-| `railsI18n.localeFilePattern` | Locale file glob pattern | `"config/locales/*.yml"` |
+| `railsI18n.localeFilePattern` | Locale file glob pattern | `"config/locales/**/*.yml"` |
 | `railsI18n.priorityOfLocales` | Priority order for languages | `["en"]` |
 | `railsI18n.languagesEnableHoverProvider` | Languages for hover support | `["ruby", "erb", "haml", "slim"]` |
 | `railsI18n.annotations` | Enable inline annotations | `true` |
